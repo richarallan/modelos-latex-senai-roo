@@ -1,0 +1,56 @@
+name: Compilar documentos
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "documentos/**"
+      - "filtros/**"
+      - "scripts/**"
+      - "templates/**"
+      - ".github/workflows/compilar-documentos.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "documentos/**"
+      - "filtros/**"
+      - "scripts/**"
+      - "templates/**"
+      - ".github/workflows/compilar-documentos.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  compilar:
+    name: Gerar LaTeX, PDF e DOCX
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar Pandoc e XeLaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes pandoc texlive-xetex texlive-latex-extra
+
+      - name: Compilar documentos
+        run: python scripts/renderizar.py --formato todos
+
+      - name: Publicar artefatos
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentos-gerados
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
