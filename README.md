@@ -2,6 +2,7 @@
 
 [![Licença: CC0 1.0](https://img.shields.io/badge/licen%C3%A7a-CC0%201.0-blue.svg)](LICENSE)
 [![Compilar documentos](https://github.com/richarallan/modelos-latex-senai-roo/actions/workflows/compilar-documentos.yml/badge.svg)](https://github.com/richarallan/modelos-latex-senai-roo/actions/workflows/compilar-documentos.yml)
+[![Verificação de CI](https://github.com/richarallan/modelos-latex-senai-roo/actions/workflows/verificar-ci.yml/badge.svg)](https://github.com/richarallan/modelos-latex-senai-roo/actions/workflows/verificar-ci.yml)
 
 Modelos abertos para criar apostilas, planos, atividades e outros materiais
 educacionais. O MVP separa **conteúdo** de **apresentação**: o texto é escrito
@@ -99,6 +100,24 @@ principalmente nos arquivos de `documentos/`. Um comando inicial possível é:
 > informada. Não altere os arquivos de automação.
 
 O conteúdo permanece legível e versionável mesmo sem uma ferramenta de IA.
+
+## Verificação contínua
+
+O workflow `verificar-ci.yml` executa automaticamente em todo pull request e
+em alterações na branch `main`. Ele verifica:
+
+- sintaxe dos scripts Python;
+- testes unitários do orquestrador de renderização;
+- estrutura mínima dos documentos de exemplo;
+- sintaxe dos workflows YAML.
+
+Para executar as mesmas verificações localmente:
+
+```bash
+python -m pip install -r requirements-dev.txt
+python -m compileall -q scripts tests
+python -m unittest discover -s tests -p "test_*.py" -v
+```
 
 ## Compilação no GitHub
 
