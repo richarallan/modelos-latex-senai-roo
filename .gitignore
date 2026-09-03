@@ -1,0 +1,22 @@
+# Arquivos gerados
+dist/
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.xdv
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editores e sistema operacional
+.DS_Store
+Thumbs.db
+*.swp
+*~
