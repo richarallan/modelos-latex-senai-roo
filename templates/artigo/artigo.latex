@@ -84,7 +84,9 @@ $endif$
   pdftitle={$if(title-meta)$$title-meta$$else$$title$$endif$},
   pdfauthor={$if(author-meta)$$author-meta$$endif$},
   pdflang={pt-BR},
+$if(palavras_chave)$
   pdfkeywords={$for(palavras_chave)$$palavras_chave$$sep$, $endfor$},
+$endif$
   pdfcreator={LaTeX via Pandoc},
   hidelinks
 }
@@ -230,7 +232,11 @@ $if(resumo)$
 \begingroup\setlength{\parindent}{0pt}
 $resumo$
 \par\endgroup
+\end{singlespace}
+$endif$
+$if(palavras_chave)$
 \vspace{0.4cm}
+\begin{singlespace}
 \noindent\textbf{Palavras-chave:} $for(palavras_chave)$$palavras_chave$$sep$. $endfor$.
 \end{singlespace}
 $endif$

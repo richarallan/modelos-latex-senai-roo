@@ -206,7 +206,9 @@ def metadados_pandoc(documento: Documento) -> list[str]:
         )
     argumentos: list[str] = []
     for chave, valor in mapeamento.items():
-        argumentos.append(f"--metadata={chave}:{valor}")
+        valores = valor if isinstance(valor, list) else [valor]
+        for item in valores:
+            argumentos.append(f"--metadata={chave}:{item}")
     return argumentos
 
 

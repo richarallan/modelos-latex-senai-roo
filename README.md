@@ -135,6 +135,16 @@ gerar qualquer arquivo, com orientação para usar `tex,pdf`.
 Os identificadores internos são previsíveis e não usam espaços ou acentos. O
 texto exibido no documento continua normalmente em português.
 
+O campo `autor` aceita um nome em texto ou uma lista YAML de nomes. A ordem
+informada é preservada na apresentação:
+
+```yaml
+autor:
+  - "Nome do primeiro autor"
+  - "Nome do segundo autor"
+  - "Nome do terceiro autor"
+```
+
 ```markdown
 ---
 versao_schema: 1
@@ -201,6 +211,10 @@ quando fornecido. Resumo e palavras-chave são opcionais no esquema, mas devem
 ser preenchidos em um artigo completo. A referência recomenda um resumo de
 100 a 250 palavras; o renderizador não acrescenta texto para atingir esse
 limite nem o número de páginas indicado no documento original.
+
+A linha “Palavras-chave” aparece somente quando `palavras_chave` contém itens,
+mesmo que o resumo não tenha sido informado. Com o campo ausente ou uma lista
+vazia (`[]`), a linha é omitida.
 
 Escreva as seções em Markdown. Para referências e anexos sem numeração, use
 por exemplo `# Referências {.unnumbered}`. Blocos pedagógicos, tabelas e fórmulas

@@ -119,6 +119,58 @@ class ModeloArtigoTestes(unittest.TestCase):
             timeout=60,
         )
 
+    def gerar_tex(self, documento: renderizar.Documento) -> str:
+        with tempfile.TemporaryDirectory() as temporario:
+            pasta = Path(temporario)
+            entrada = self.escrever(pasta, "artigo.md", documento)
+            resultado = self.executar(
+                str(entrada), "--formato", "tex", "--saida", str(pasta / "saida")
+            )
+            self.assertEqual(resultado.returncode, 0, resultado.stdout + resultado.stderr)
+            return (pasta / "saida" / "artigo.tex").read_text(encoding="utf-8")
+
+    @unittest.skipUnless(shutil.which("pandoc"), "Pandoc necessário para integração")
+    def test_tex_preserva_tres_autores_na_ordem_em_todas_as_paginas(self) -> None:
+        documento = self.documento(autor=["Zélia & Silva", "Ana_Costa", "Érico Souza"])
+        tex = self.gerar_tex(documento)
+        regioes = re.findall(
+            r"\\begin\{titlepage\}(.*?)\\end\{titlepage\}", tex, re.DOTALL
+        )
+        regioes.append(tex.split(r"\pagenumbering{arabic}", 1)[1])
+        self.assertEqual(len(regioes), 4, "Capa, rosto, aprovação e corpo do artigo")
+        autores_tex = [r"Zélia \& Silva", r"Ana\_Costa", "Érico Souza"]
+        for indice, regiao in enumerate(regioes):
+            with self.subTest(regiao=indice):
+                posicoes = [regiao.index(autor) for autor in autores_tex]
+                self.assertEqual(posicoes, sorted(posicoes))
+                self.assertTrue(all(regiao.count(autor) == 1 for autor in autores_tex))
+                self.assertNotIn("['", regiao)
+
+    @unittest.skipUnless(shutil.which("pandoc"), "Pandoc necessário para integração")
+    def test_tex_exibe_palavras_chave_apenas_quando_preenchidas(self) -> None:
+        preenchidas = ["manutenção mecânica", "medição & análise", "eixo_A"]
+        for resumo in (None, "Resumo do artigo de demonstração."):
+            for estado, palavras in (("ausentes", None), ("vazias", []), ("preenchidas", preenchidas)):
+                with self.subTest(resumo=resumo, palavras_chave=estado):
+                    documento = self.documento()
+                    metadados = dict(documento.metadados)
+                    if resumo is not None:
+                        metadados["resumo"] = resumo
+                    if palavras is not None:
+                        metadados["palavras_chave"] = palavras
+                    tex = self.gerar_tex(
+                        renderizar.Documento(documento.caminho, metadados, documento.corpo)
+                    )
+                    if palavras:
+                        compacto = re.sub(r"\s+", " ", tex)
+                        self.assertEqual(compacto.count(r"\textbf{Palavras-chave:}"), 1)
+                        self.assertIn(
+                            r"manutenção mecânica. medição \& análise. eixo\_A.", compacto
+                        )
+                    else:
+                        self.assertNotIn("Palavras-chave:", tex)
+                        self.assertNotRegex(tex, r"(?m)^\s*(?:\\noindent\s*)?\.\s*$")
+
     def test_word_do_artigo_e_rejeitado_antes_de_saidas_parciais_no_lote(self) -> None:
         # O documento legado vem primeiro para detectar validação tardia por arquivo.
         with tempfile.TemporaryDirectory() as temporario:
