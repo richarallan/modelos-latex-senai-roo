@@ -6,25 +6,44 @@ Este projeto reconhece e agradece o trabalho de **Emerson Mello**, professor do
 Instituto Federal de Santa Catarina (IFSC), autor do repositório
 [emersonmello/modelos-latex](https://github.com/emersonmello/modelos-latex).
 
-O projeto original reúne modelos LaTeX para atividades acadêmicas e
-administrativas e serviu como referência conceitual e histórica para a criação
-deste repositório. Na data desta adaptação, o trabalho original estava
-disponibilizado sob a dedicação ao domínio público **Creative Commons Zero —
-CC0 1.0 Universal**.
+O projeto original está disponibilizado sob a dedicação ao domínio público
+**Creative Commons Zero — CC0 1.0 Universal**. Embora a CC0 dispense atribuição
+como condição de reutilização, este registro é mantido por reconhecimento
+acadêmico, transparência e respeito ao trabalho que tornou esta iniciativa
+possível.
 
-Embora a CC0 dispense a atribuição como condição de reutilização, este crédito
-é mantido por reconhecimento acadêmico, transparência sobre a origem da ideia
-e respeito ao trabalho que tornou esta iniciativa possível.
+Referência consultada para esta etapa:
+
+- repositório: `emersonmello/modelos-latex`;
+- branch: `master`;
+- commit: [`b7660256425e58fa81d3cf7919832247ff564721`](https://github.com/emersonmello/modelos-latex/commit/b7660256425e58fa81d3cf7919832247ff564721);
+- data da consulta: 11 de novembro de 2026;
+- licença declarada no repositório original: CC0 1.0 Universal.
+
+Foram estudadas principalmente a separação por tipos documentais e as
+responsabilidades das classes e modelos presentes em:
+
+- `classes/ifscarticle.cls`;
+- `classes/ifscexam.cls`;
+- `classes/ifscutils.sty`;
+- `lista-ou-prova/lista-ou-prova-exam.tex`;
+- `nota-de-aula/nota-de-aula.tex`;
+- `plano-de-ensino/plano-de-ensino.tex`;
+- `relatorio/relatorio.tex`.
+
+O código do primeiro MVP deste repositório não é uma cópia literal desses
+arquivos. Ele adota uma arquitetura própria, baseada em documento canônico,
+JSON Schema, Markdown, Pandoc, filtro Lua, classe LaTeX e referência DOCX.
 
 ## Adaptação para o contexto educacional local
 
 **Richar Allan Macedo da Silva** iniciou e mantém esta adaptação voltada à
 produção de materiais educacionais em Rondonópolis, Mato Grosso.
 
-O primeiro MVP acrescenta um fluxo independente baseado em Markdown, Pandoc,
-filtro Lua, geração em LaTeX/PDF/DOCX e automação pelo GitHub Actions. Essas
-adições buscam facilitar a edição por docentes e por diferentes ferramentas de
-inteligência artificial, preservando formatos abertos e histórico de versões.
+O primeiro MVP estabelece um contrato documental independente da ferramenta de
+inteligência artificial utilizada. A IA pode redigir ou classificar o conteúdo;
+o esquema valida a estrutura; e renderizadores determinísticos produzem TEX,
+PDF e DOCX.
 
 ## Independência institucional e direitos de terceiros
 

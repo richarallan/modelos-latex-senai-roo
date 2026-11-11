@@ -3,42 +3,60 @@
 [![Licença: CC0 1.0](https://img.shields.io/badge/licen%C3%A7a-CC0%201.0-blue.svg)](LICENSE)
 [![Compilar documentos](https://github.com/richarallan/modelos-latex-senai-roo/actions/workflows/compilar-documentos.yml/badge.svg)](https://github.com/richarallan/modelos-latex-senai-roo/actions/workflows/compilar-documentos.yml)
 
-Modelos abertos para criar apostilas, planos, atividades e outros materiais
-educacionais. O MVP separa **conteúdo** de **apresentação**: o texto é escrito
-em Markdown, fácil de revisar com qualquer assistente de inteligência
-artificial, e o mesmo arquivo gera LaTeX, PDF e DOCX.
+Modelos abertos para criar materiais educacionais com uma fonte única de
+conteúdo. O professor ou uma IA escreve Markdown com metadados YAML; o projeto
+valida essa estrutura e gera TEX, PDF e DOCX de maneira reproduzível.
 
 > [!IMPORTANT]
 > Este é um projeto independente e não constitui publicação oficial do SENAI.
 > Marcas, logotipos e manuais de identidade visual não são licenciados por este
-> repositório e só devem ser usados por pessoas autorizadas.
+> repositório e somente devem ser usados por pessoas autorizadas.
 
-## O que o primeiro MVP entrega
+## Princípio do projeto
 
-- fonte única em Markdown;
-- saída editável em `.tex` e `.docx`;
-- saída final em `.pdf`;
-- blocos pedagógicos para objetivo, atenção e prática;
-- compilação local por um único comando;
-- compilação automática no GitHub Actions;
-- artefatos gerados disponíveis em cada execução do workflow.
+**A IA redige e classifica; o esquema valida; o renderizador formata.**
+
+O primeiro MVP mantém três camadas separadas:
+
+1. conteúdo e metadados em Markdown/YAML;
+2. significado dos blocos pedagógicos em JSON Schema e Lua;
+3. apresentação em classe LaTeX e arquivo de referência DOCX.
+
+Assim, a identidade visual poderá evoluir sem reescrever atividades, notas de
+aula ou a lógica de validação.
+
+## Escopo do primeiro MVP
+
+- tipos documentais `atividade_avaliativa` e `nota_aula`;
+- validação por JSON Schema;
+- blocos para objetivo, situação-problema, questão, segurança, prática e
+  rubrica;
+- classe LaTeX visualmente neutra;
+- referência DOCX com estilos semânticos;
+- geração de TEX, PDF e DOCX por um único comando;
+- quatro testes automatizados;
+- validação e compilação no GitHub Actions.
 
 ## Estrutura
 
 ```text
 .
-├── documentos/                         # conteúdo editável
-│   └── apostila-exemplo.md
+├── documentos/                         # conteúdos mantidos pelo projeto
+├── exemplos/                           # exemplos dos dois tipos do MVP
+├── schemas/
+│   └── documento.schema.json           # contrato documental
 ├── filtros/
-│   └── bloco-senai.lua                 # blocos pedagógicos no PDF/DOCX
+│   └── blocos-senai.lua                # tradução dos blocos semânticos
 ├── scripts/
-│   └── renderizar.py                   # orquestra Pandoc e XeLaTeX
+│   ├── renderizar.py                   # valida e coordena a conversão
+│   └── criar_reference_docx.py         # recria a referência do Word
 ├── templates/
-│   └── blocos-senai.tex                # dependências LaTeX dos blocos
-├── .github/workflows/
-│   └── compilar-documentos.yml         # automação de compilação
-├── CREDITS.md
-└── LICENSE
+│   ├── latex/classes/senaiarticle.cls  # estrutura e apresentação LaTeX
+│   └── docx/reference.docx             # estilos do Word
+├── tests/
+│   └── test_renderizar.py
+└── .github/workflows/
+    └── compilar-documentos.yml
 ```
 
 ## Uso rápido
@@ -47,70 +65,82 @@ artificial, e o mesmo arquivo gera LaTeX, PDF e DOCX.
 
 - Python 3.10 ou superior;
 - Pandoc 2.17 ou superior;
-- XeLaTeX com o pacote `tcolorbox`.
+- XeLaTeX com `tcolorbox` e fontes TeX Gyre.
 
 Em Ubuntu ou Debian:
 
 ```bash
+python -m pip install --requirement requirements.txt
 sudo apt-get update
-sudo apt-get install pandoc texlive-xetex texlive-latex-extra
+sudo apt-get install pandoc texlive-xetex texlive-latex-extra texlive-fonts-recommended
 ```
 
-### 2. Edite ou crie um documento
+### 2. Valide o conteúdo
 
-Duplique `documentos/apostila-exemplo.md`, altere os metadados do cabeçalho e
-escreva o conteúdo. Um bloco pedagógico usa esta sintaxe:
-
-```markdown
-::: objetivo
-Identificar os principais elementos de uma máquina.
-:::
+```bash
+python scripts/renderizar.py --validar-apenas
 ```
 
-As classes disponíveis no MVP são `objetivo`, `atencao` e `pratica`.
+Se um campo obrigatório estiver ausente ou uma imagem local não existir, a
+compilação será interrompida com uma mensagem que identifica o problema.
 
-### 3. Gere os arquivos
+### 3. Gere os documentos
 
 ```bash
 python scripts/renderizar.py --formato todos
 ```
 
-Os resultados serão gravados em `dist/`. Para gerar apenas um formato:
+Para formatos específicos:
 
 ```bash
-python scripts/renderizar.py --formato tex
-python scripts/renderizar.py --formato pdf
-python scripts/renderizar.py --formato docx
+python scripts/renderizar.py exemplos/atividade-usinagem.md --formato pdf,docx
+python scripts/renderizar.py exemplos/nota-aula-metrologia.md --formato tex
 ```
 
-Também é possível compilar somente arquivos específicos:
+Os resultados são gravados em `dist/` preservando a pasta de origem.
+
+## Documento canônico
+
+Os identificadores internos são previsíveis e não usam espaços ou acentos. O
+texto exibido no documento continua normalmente em português.
+
+```markdown
+---
+versao_schema: 1
+tipo_documento: atividade_avaliativa
+titulo: "Pressão de corte e tempo de usinagem"
+autor: "Richar Allan Macedo"
+instituicao: "SENAI/MT"
+unidade_operacional: "Rondonópolis"
+unidade_curricular: "Processos de Fabricação Mecânica"
+publico: "Aprendizagem industrial"
+carga_horaria: "4 h"
+---
+
+::: {.questao #q1 pontos=2 tipo=calculo}
+Determine a rotação adequada para a operação de desbaste.
+:::
+```
+
+Assistentes de IA devem preservar o cabeçalho YAML, os identificadores e a
+sintaxe dos blocos. O conteúdo pode permanecer legível e versionável mesmo sem
+uma ferramenta de IA.
+
+## Testes e integração contínua
 
 ```bash
-python scripts/renderizar.py documentos/apostila-exemplo.md --formato todos
+python -m unittest discover --start-directory tests --verbose
 ```
 
-## Uso com inteligência artificial
-
-Para reduzir alterações acidentais na automação, peça à IA para trabalhar
-principalmente nos arquivos de `documentos/`. Um comando inicial possível é:
-
-> Revise `documentos/apostila-exemplo.md`, preserve o cabeçalho YAML e a
-> sintaxe dos blocos pedagógicos e adapte o conteúdo para a unidade curricular
-> informada. Não altere os arquivos de automação.
-
-O conteúdo permanece legível e versionável mesmo sem uma ferramenta de IA.
-
-## Compilação no GitHub
-
-O workflow `compilar-documentos.yml` é executado em pull requests, alterações
-relevantes na branch `main` e acionamento manual. Ao final, a execução publica
-um artefato chamado `documentos-gerados` contendo LaTeX, PDF e DOCX.
+O workflow `compilar-documentos.yml` executa os testes, valida todas as fontes,
+gera os três formatos e publica o artefato `documentos-gerados` em cada pull
+request e alteração relevante na `main`.
 
 ## Créditos e licença
 
 O projeto reconhece como referência o trabalho de Emerson Mello, do Instituto
-Federal de Santa Catarina. Consulte [CREDITS.md](CREDITS.md) para os créditos e
-o histórico da adaptação.
+Federal de Santa Catarina. Consulte [CREDITS.md](CREDITS.md) para o commit
+consultado, os componentes estudados e os limites desta adaptação.
 
 O conteúdo próprio deste repositório é disponibilizado sob a dedicação ao
 domínio público [CC0 1.0 Universal](LICENSE), sem afetar direitos de terceiros,

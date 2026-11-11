@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/richarallan/modelos-latex-senai-roo/schemas/documento.schema.json",
+  "title": "Documento canônico do projeto Modelos LaTeX SENAI Rondonópolis",
+  "description": "Metadados mínimos compartilhados por documentos produzidos por pessoas ou por assistentes de IA.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "versao_schema",
+    "tipo_documento",
+    "titulo",
+    "autor",
+    "instituicao",
+    "unidade_operacional",
+    "unidade_curricular",
+    "publico",
+    "carga_horaria"
+  ],
+  "properties": {
+    "versao_schema": {
+      "const": 1,
+      "description": "Versão do contrato documental."
+    },
+    "tipo_documento": {
+      "type": "string",
+      "enum": ["atividade_avaliativa", "nota_aula"]
+    },
+    "titulo": {
+      "type": "string",
+      "minLength": 3
+    },
+    "subtitulo": {
+      "type": "string"
+    },
+    "autor": {
+      "type": "string",
+      "minLength": 3
+    },
+    "instituicao": {
+      "type": "string",
+      "minLength": 2
+    },
+    "unidade_operacional": {
+      "type": "string",
+      "minLength": 2
+    },
+    "unidade_curricular": {
+      "type": "string",
+      "minLength": 2
+    },
+    "publico": {
+      "type": "string",
+      "minLength": 2
+    },
+    "carga_horaria": {
+      "type": "string",
+      "pattern": "^[0-9]+([,.][0-9]+)?\\s*(h|min)$"
+    },
+    "data": {
+      "type": "string"
+    },
+    "idioma": {
+      "type": "string",
+      "default": "pt-BR"
+    },
+    "palavras_chave": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  }
+}
