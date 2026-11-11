@@ -1,0 +1,244 @@
+% Perfil acadêmico baseado em original/Modelo Artigo.docx.
+% A opção da classe preserva o estilo padrão dos documentos pedagógicos.
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[artigo]{senaiarticle}
+\usepackage{amsmath,amssymb}
+\usepackage{unicode-math}
+\usepackage[bidi=default]{babel}
+\babelprovide[main,import]{brazilian}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\urlstyle{same}
+\setlength{\emergencystretch}{3em}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+$if(verbatim-in-note)$
+\usepackage{fancyvrb}
+\VerbatimFootnotes
+$endif$
+$if(tables)$
+\usepackage{array,calc}
+$if(multirow)$
+\usepackage{multirow}
+$endif$
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+$endif$
+% Restringe figuras às margens sem impedir dimensões explícitas no Markdown.
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\def\fps@figure{htbp}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+$if(strikeout)$
+% Pandoc 2.17 usa \sout; versões recentes usam \st.
+\usepackage[normalem]{ulem}
+\providecommand{\st}[1]{\sout{#1}}
+\providecommand{\ul}[1]{\uline{#1}}
+\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
+$endif$
+$if(numbersections)$
+\setcounter{secnumdepth}{3}
+$else$
+\setcounter{secnumdepth}{-1}
+$endif$
+$if(csl-refs)$
+% Compatibilidade com as referências produzidas pelo citeproc do Pandoc.
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+\let\@cite@ofmt\@firstofone
+\def\@biblabel#1{}
+\def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2]
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}\setlength{\leftmargin}{0pt}\setlength{\parsep}{0pt}
+  \ifodd #1
+    \setlength{\leftmargin}{\cslhangindent}\setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+$endif$
+\hypersetup{
+  pdftitle={$if(title-meta)$$title-meta$$else$$title$$endif$},
+  pdfauthor={$if(author-meta)$$author-meta$$endif$},
+  pdflang={pt-BR},
+  pdfkeywords={$for(palavras_chave)$$palavras_chave$$sep$, $endfor$},
+  pdfcreator={LaTeX via Pandoc},
+  hidelinks
+}
+$for(header-includes)$
+$header-includes$
+$endfor$
+% O logo é fornecido pelo renderizador, nunca reconstruído tipograficamente.
+\newcommand{\senaimarca}{%
+$if(logo-artigo)$
+  \noindent\makebox[\textwidth][c]{\includegraphics[width=\paperwidth]{$logo-artigo$}}\par
+$endif$
+}
+\newcommand{\senaiassinatura}[1]{%
+  \par\vspace{0.65cm}\noindent\rule{0.65\textwidth}{0.4pt}\par
+  {\small #1\par}}
+\begin{document}
+$for(include-before)$
+$include-before$
+$endfor$
+$if(pre-textuais)$
+\hypersetup{pageanchor=false}
+% Capa: hierarquia e alinhamentos do modelo institucional.
+\begin{titlepage}
+\centering
+\senaimarca
+$if(instituicao)$
+{\small $instituicao$\par}
+$endif$
+$if(unidade-operacional)$
+{\small $unidade-operacional$\par}
+$endif$
+\vspace{0.8cm}
+{\bfseries TRABALHO DE CONCLUSÃO DE CURSO\par}
+\vspace{0.6cm}
+{\bfseries ARTIGO CIENTÍFICO\par}
+\vspace{0.6cm}
+{\bfseries\MakeUppercase{$curso$}\par}
+\vspace{1cm}
+{\bfseries\MakeUppercase{$title$}\par}
+$if(subtitle)$
+\vspace{0.3cm}
+{$subtitle$\par}
+$endif$
+\vspace{1.2cm}
+\begin{flushright}
+\bfseries
+$for(author)$
+$author$\par
+$endfor$
+\end{flushright}
+\vfill
+{\bfseries\MakeUppercase{$local$}\par}
+{\bfseries $date$\par}
+\end{titlepage}
+% Folha de rosto: natureza do trabalho no bloco direito.
+\begin{titlepage}
+\centering
+\senaimarca
+\vspace{0.4cm}
+{\bfseries
+$for(author)$
+$author$\par
+$endfor$
+}
+\vspace{1cm}
+{\bfseries\MakeUppercase{$title$}\par}
+$if(subtitle)$
+\vspace{0.3cm}
+{$subtitle$\par}
+$endif$
+\vspace{0.8cm}
+\begin{flushright}
+\begin{minipage}{0.5\textwidth}
+\setlength{\parindent}{0pt}
+Artigo científico apresentado no curso de $curso$, como exigência para obtenção do título de Técnico em $habilitacao$.
+\par\vspace{0.6cm}
+\textbf{Orientador(a):} $if(orientador)$$orientador$$else$\hrulefill$endif$
+\end{minipage}
+\end{flushright}
+\vfill
+{\bfseries\MakeUppercase{$local$}\par}
+{\bfseries $date$\par}
+\end{titlepage}
+% Aprovação: campos vazios, sem atribuir resultados ou aprovações.
+\begin{titlepage}
+\centering
+\senaimarca
+\vspace{0.4cm}
+{\bfseries TERMO DE APROVAÇÃO\par}
+\vspace{0.6cm}
+{\bfseries
+$for(author)$
+$author$\par
+$endfor$
+}
+\vspace{0.6cm}
+{\bfseries\MakeUppercase{$title$}\par}
+\vspace{0.6cm}
+\begin{flushleft}
+\textbf{Resultado final:}\quad \(\square\) Apto\qquad \(\square\) Não apto
+\end{flushleft}
+\begin{singlespace}
+\senaiassinatura{Coordenação pedagógica: $coordenacao$}
+\vspace{0.4cm}
+BANCA EXAMINADORA\par
+\senaiassinatura{Orientador(a): $orientador$}
+$if(banca)$
+$for(banca)$
+\senaiassinatura{$banca$}
+$endfor$
+$else$
+\senaiassinatura{Membro da banca}
+\senaiassinatura{Membro da banca}
+$endif$
+\end{singlespace}
+\vfill
+$local$, $if(data-aprovacao)$$data-aprovacao$$else$\rule{0.7cm}{0.4pt} de \rule{2.5cm}{0.4pt} de \rule{1cm}{0.4pt}$endif$
+\end{titlepage}
+\hypersetup{pageanchor=true}
+$endif$
+% Corpo do artigo: paginação independente dos elementos pré-textuais.
+\pagenumbering{arabic}
+\pagestyle{senaiartigo}
+\begin{center}
+{\bfseries\MakeUppercase{$title$}\par}
+$if(subtitle)$
+\vspace{0.3cm}
+{$subtitle$\par}
+$endif$
+\end{center}
+\begin{flushright}
+$for(author)$
+$author$$if(email)$\footnote{Contato: \href{mailto:$email$}{\nolinkurl{$email$}}.}$endif$\par
+$endfor$
+$if(orientador)$
+Orientador(a): $orientador$\par
+$endif$
+\end{flushright}
+$if(resumo)$
+\vspace{0.3cm}
+\begin{singlespace}
+\noindent\textbf{RESUMO}\par
+\begingroup\setlength{\parindent}{0pt}
+$resumo$
+\par\endgroup
+\vspace{0.4cm}
+\noindent\textbf{Palavras-chave:} $for(palavras_chave)$$palavras_chave$$sep$. $endfor$.
+\end{singlespace}
+$endif$
+$if(toc)$
+\tableofcontents
+$endif$
+$body$
+$for(include-after)$
+$include-after$
+$endfor$
+\end{document}

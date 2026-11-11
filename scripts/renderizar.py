@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Valida e renderiza documentos canônicos em TEX, PDF e DOCX."""
+"""Valida Markdown e gera TEX/PDF, com DOCX disponível para os modelos legados."""
 
 from __future__ import annotations
 
@@ -25,6 +25,8 @@ SCHEMA = RAIZ / "schemas" / "documento.schema.json"
 FILTRO = RAIZ / "filtros" / "blocos-senai.lua"
 CLASSES_LATEX = RAIZ / "templates" / "latex" / "classes"
 REFERENCE_DOCX = RAIZ / "templates" / "docx" / "reference.docx"
+TEMPLATE_ARTIGO = RAIZ / "templates" / "artigo" / "artigo.latex"
+LOGO_ARTIGO = RAIZ / "templates" / "artigo" / "recursos" / "logo-senai.png"
 FORMATOS = ("tex", "pdf", "docx")
 PADRAO_IMAGEM = re.compile(r"!\[[^\]]*\]\((?P<destino>[^)\s]+)(?:\s+[^)]*)?\)")
 
@@ -42,7 +44,7 @@ class ErroDocumento(ValueError):
 
 def criar_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Valida Markdown/YAML e gera LaTeX, PDF e DOCX.",
+        description="Valida Markdown/YAML e gera LaTeX/PDF; DOCX é opcional nos modelos legados.",
     )
     parser.add_argument(
         "entradas",
@@ -52,8 +54,8 @@ def criar_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--formato",
-        default="todos",
-        help="tex, pdf, docx, lista separada por vírgulas ou todos.",
+        default="tex,pdf",
+        help="tex, pdf, docx, lista separada por vírgulas ou todos (padrão: tex,pdf).",
     )
     parser.add_argument(
         "--saida",
@@ -193,10 +195,27 @@ def metadados_pandoc(documento: Documento) -> list[str]:
     }
     if metadados.get("subtitulo"):
         mapeamento["subtitle"] = metadados["subtitulo"]
+    if metadados.get("modelo") == "artigo":
+        mapeamento.update(
+            {
+                "curso": metadados.get("curso", metadados["unidade_curricular"]),
+                "habilitacao": metadados.get("habilitacao", metadados["unidade_curricular"]),
+                "local": metadados.get("local", metadados["unidade_operacional"]),
+                "data-aprovacao": metadados.get("data_aprovacao", ""),
+            }
+        )
     argumentos: list[str] = []
     for chave, valor in mapeamento.items():
         argumentos.append(f"--metadata={chave}:{valor}")
     return argumentos
+
+
+def exibir_caminho(caminho: Path) -> str:
+    """Exibe caminhos locais sem impedir saídas e entradas fora do checkout."""
+    try:
+        return str(caminho.relative_to(RAIZ))
+    except ValueError:
+        return str(caminho)
 
 
 def comando_pandoc(
@@ -211,12 +230,24 @@ def comando_pandoc(
         str(documento.caminho),
         "--from=markdown+fenced_divs+fenced_code_attributes",
         "--standalone",
-        "--toc",
         "--number-sections",
         f"--lua-filter={FILTRO}",
         f"--resource-path={recursos}",
         *metadados_pandoc(documento),
     ]
+    artigo = documento.metadados.get("modelo") == "artigo"
+    if artigo and formato == "docx":
+        raise ErroDocumento(
+            "modelo artigo: a saída Word/DOCX ficará para uma próxima etapa; "
+            "use --formato tex,pdf"
+        )
+    if not artigo:
+        comando.append("--toc")
+    elif formato in {"tex", "pdf"}:
+        comando.append(f"--template={TEMPLATE_ARTIGO}")
+        comando.append(f"--variable=logo-artigo:{LOGO_ARTIGO.as_posix()}")
+        if documento.metadados.get("pre_textuais", True):
+            comando.append("--variable=pre-textuais:true")
     if formato == "tex":
         comando.extend(("--to=latex", "--variable=documentclass:senaiarticle"))
     elif formato == "pdf":
@@ -238,12 +269,22 @@ def ambiente_compilacao() -> dict[str, str]:
     return ambiente
 
 
+def validar_formatos(documentos: Iterable[Documento], formatos: tuple[str, ...]) -> None:
+    if "docx" in formatos and any(doc.metadados.get("modelo") == "artigo" for doc in documentos):
+        raise ErroDocumento(
+            "modelo artigo: a saída Word/DOCX ficará para uma próxima etapa; "
+            "use --formato tex,pdf (nenhum documento foi renderizado)"
+        )
+
+
 def renderizar(
     pandoc: str,
     documentos: Iterable[Documento],
     formatos: tuple[str, ...],
     diretorio_saida: Path,
 ) -> None:
+    documentos = list(documentos)
+    validar_formatos(documentos, formatos)
     if "docx" in formatos and not REFERENCE_DOCX.is_file():
         raise ErroDocumento(
             f"arquivo de referência DOCX não encontrado: {REFERENCE_DOCX.relative_to(RAIZ)}"
@@ -253,7 +294,7 @@ def renderizar(
         for formato in formatos:
             destino = (diretorio_saida / relativa).with_suffix(f".{formato}")
             destino.parent.mkdir(parents=True, exist_ok=True)
-            print(f"[renderizar] {documento.caminho.name} -> {destino.relative_to(RAIZ)}")
+            print(f"[renderizar] {documento.caminho.name} -> {exibir_caminho(destino)}")
             subprocess.run(
                 comando_pandoc(pandoc, documento, formato, destino),
                 cwd=RAIZ,
@@ -271,7 +312,7 @@ def main() -> int:
         for documento in documentos:
             validar_metadados(documento, schema)
             validar_recursos(documento)
-            print(f"[validar] {documento.caminho.relative_to(RAIZ)}: OK")
+            print(f"[validar] {exibir_caminho(documento.caminho)}: OK")
 
         if args.validar_apenas:
             print("[validar] todos os documentos são válidos")

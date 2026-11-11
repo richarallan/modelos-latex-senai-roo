@@ -25,6 +25,51 @@
       "type": "string",
       "enum": ["atividade_avaliativa", "nota_aula"]
     },
+    "modelo": {
+      "type": "string",
+      "enum": ["artigo"],
+      "description": "Apresentação opcional, independente do tipo documental. Sem este campo, mantém o modelo neutro do MVP."
+    },
+    "pre_textuais": {
+      "type": "boolean",
+      "default": true,
+      "description": "No modelo artigo, inclui capa, folha de rosto e termo de aprovação."
+    },
+    "resumo": {
+      "type": "string",
+      "minLength": 1
+    },
+    "email": {
+      "type": "string",
+      "minLength": 1
+    },
+    "curso": {
+      "type": "string",
+      "minLength": 1
+    },
+    "habilitacao": {
+      "type": "string",
+      "minLength": 1
+    },
+    "local": {
+      "type": "string",
+      "minLength": 1
+    },
+    "orientador": {
+      "type": "string",
+      "minLength": 1
+    },
+    "coordenacao": {
+      "type": "string",
+      "minLength": 1
+    },
+    "banca": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "data_aprovacao": {
+      "type": "string"
+    },
     "titulo": {
       "type": "string",
       "minLength": 3

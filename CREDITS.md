@@ -45,6 +45,19 @@ inteligência artificial utilizada. A IA pode redigir ou classificar o conteúdo
 o esquema valida a estrutura; e renderizadores determinísticos produzem TEX,
 PDF e DOCX.
 
+## Modelo visual de artigo
+
+O perfil de artigo toma como referência o arquivo
+[`Modelo Artigo.docx`](templates/artigo/original/Modelo%20Artigo.docx),
+já fornecido no repositório. Foram preservadas a estrutura dos elementos
+pré-textuais, a hierarquia dos títulos, as margens e a tipografia acadêmica.
+Os arquivos originais não foram modificados.
+
+A imagem `templates/artigo/recursos/logo-senai.png` é uma cópia integral de
+`word/media/image1.png` desse DOCX. A utilização da marca continua sujeita
+aos direitos de seus titulares; a adaptação não atribui uma licença nova
+à imagem ou ao documento de referência.
+
 ## Independência institucional e direitos de terceiros
 
 Este repositório não representa endosso, participação ou responsabilidade de
