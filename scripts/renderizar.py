@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import shutil
@@ -23,12 +24,15 @@ FONTES_PADRAO = (RAIZ / "documentos", RAIZ / "exemplos")
 SAIDA_PADRAO = RAIZ / "dist"
 SCHEMA = RAIZ / "schemas" / "documento.schema.json"
 FILTRO = RAIZ / "filtros" / "blocos-senai.lua"
+FILTRO_REFERENCIAS = RAIZ / "filtros" / "referencias-cruzadas.lua"
+ESTILO_CITACOES = RAIZ / "templates" / "bibliografia" / "abnt-autor-data.csl"
 CLASSES_LATEX = RAIZ / "templates" / "latex" / "classes"
 REFERENCE_DOCX = RAIZ / "templates" / "docx" / "reference.docx"
 TEMPLATE_ARTIGO = RAIZ / "templates" / "artigo" / "artigo.latex"
 LOGO_ARTIGO = RAIZ / "templates" / "artigo" / "recursos" / "logo-senai.png"
 FORMATOS = ("tex", "pdf", "docx")
 PADRAO_IMAGEM = re.compile(r"!\[[^\]]*\]\((?P<destino>[^)\s]+)(?:\s+[^)]*)?\)")
+PADRAO_ID_REFERENCIA = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]*\Z")
 
 
 @dataclass(frozen=True)
@@ -66,7 +70,7 @@ def criar_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--validar-apenas",
         action="store_true",
-        help="Valida metadados e recursos sem executar o Pandoc.",
+        help="Valida metadados, recursos, citações e referências com Pandoc, sem gerar arquivos.",
     )
     parser.add_argument(
         "--pandoc",
@@ -77,8 +81,6 @@ def criar_parser() -> argparse.ArgumentParser:
 
 
 def ler_schema() -> dict[str, Any]:
-    import json
-
     with SCHEMA.open(encoding="utf-8") as arquivo:
         return json.load(arquivo)
 
@@ -132,6 +134,50 @@ def validar_recursos(documento: Documento) -> None:
         raise ErroDocumento(
             f"{documento.caminho}: recurso(s) não encontrado(s): " + ", ".join(ausentes)
         )
+    validar_bibliografia(documento)
+
+
+def caminhos_bibliografia(documento: Documento) -> list[Path]:
+    informados = documento.metadados.get("bibliografia", [])
+    if isinstance(informados, str):
+        informados = [informados]
+    return [(documento.caminho.parent / caminho).resolve() for caminho in informados]
+
+
+def validar_bibliografia(documento: Documento) -> None:
+    """Valida o subconjunto CSL-YAML/JSON e a unicidade das chaves entre arquivos."""
+    identificadores: set[str] = set()
+    for caminho in caminhos_bibliografia(documento):
+        if not caminho.is_file():
+            raise ErroDocumento(f"{documento.caminho}: bibliografia não encontrada: {caminho}")
+        if caminho.suffix.lower() not in {".yaml", ".yml", ".json"}:
+            raise ErroDocumento(f"{caminho}: use bibliografia estruturada CSL-YAML ou CSL-JSON")
+        try:
+            texto = caminho.read_text(encoding="utf-8")
+            dados = json.loads(texto) if caminho.suffix.lower() == ".json" else yaml.safe_load(texto)
+        except (yaml.YAMLError, json.JSONDecodeError) as erro:
+            raise ErroDocumento(f"{caminho}: bibliografia inválida: {erro}") from erro
+        if caminho.suffix.lower() == ".json":
+            referencias = dados
+        else:
+            referencias = dados.get("references") if isinstance(dados, dict) else None
+        if not isinstance(referencias, list) or not referencias:
+            raise ErroDocumento(f"{caminho}: a bibliografia deve conter uma lista não vazia de references")
+        for referencia in referencias:
+            if not isinstance(referencia, dict):
+                raise ErroDocumento(f"{caminho}: cada referência deve ser um objeto CSL")
+            identificador = referencia.get("id")
+            if not isinstance(identificador, str) or not PADRAO_ID_REFERENCIA.fullmatch(identificador):
+                raise ErroDocumento(f"{caminho}: referência com id ausente ou inválido")
+            if identificador.startswith(("fig:", "gra:", "tab:", "eq:")):
+                raise ErroDocumento(f"{caminho}: id bibliográfico reservado para objeto: {identificador}")
+            if identificador in identificadores:
+                raise ErroDocumento(f"{caminho}: id bibliográfico duplicado: {identificador}")
+            identificadores.add(identificador)
+            if not isinstance(referencia.get("title"), str) or not referencia["title"].strip():
+                raise ErroDocumento(f"{caminho}: referência {identificador} sem title")
+            if not isinstance(referencia.get("type"), str) or not referencia["type"].strip():
+                raise ErroDocumento(f"{caminho}: referência {identificador} sem type CSL")
 
 
 def resolver_entradas(informadas: Iterable[Path]) -> list[Path]:
@@ -233,10 +279,19 @@ def comando_pandoc(
         "--from=markdown+fenced_divs+fenced_code_attributes",
         "--standalone",
         "--number-sections",
+        "--fail-if-warnings",
+        f"--lua-filter={FILTRO_REFERENCIAS}",
         f"--lua-filter={FILTRO}",
+        "--citeproc",
+        "--metadata=link-citations:true",
+        "--metadata=reference-section-title:Referências",
         f"--resource-path={recursos}",
         *metadados_pandoc(documento),
     ]
+    bibliografias = caminhos_bibliografia(documento)
+    if bibliografias:
+        comando.append(f"--csl={ESTILO_CITACOES}")
+        comando.extend(f"--bibliography={caminho}" for caminho in bibliografias)
     artigo = documento.metadados.get("modelo") == "artigo"
     if artigo and formato == "docx":
         raise ErroDocumento(
@@ -316,15 +371,21 @@ def main() -> int:
             validar_recursos(documento)
             print(f"[validar] {exibir_caminho(documento.caminho)}: OK")
 
-        if args.validar_apenas:
-            print("[validar] todos os documentos são válidos")
-            return 0
-
         pandoc = shutil.which(args.pandoc)
         if pandoc is None:
             raise ErroDocumento(
                 "Pandoc não encontrado; instale-o ou informe --pandoc /caminho/para/pandoc"
             )
+        if args.validar_apenas:
+            for documento in documentos:
+                subprocess.run(
+                    comando_pandoc(pandoc, documento, "tex", Path(os.devnull)),
+                    cwd=RAIZ,
+                    env=ambiente_compilacao(),
+                    check=True,
+                )
+            print("[validar] metadados, recursos, citações e referências são válidos")
+            return 0
         formatos = interpretar_formatos(args.formato)
         saida = args.saida.resolve() if args.saida.is_absolute() else (Path.cwd() / args.saida).resolve()
         renderizar(pandoc, documentos, formatos, saida)

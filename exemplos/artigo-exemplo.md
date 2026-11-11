@@ -16,6 +16,7 @@ local: "Rondonópolis – MT"
 data: "2026"
 idioma: "pt-BR"
 pre_textuais: true
+bibliografia: "referencias/artigo.yaml"
 resumo: >-
   Este artigo didático apresenta um roteiro para organizar registros de medição
   em intervenções de manutenção mecânica. O objetivo é relacionar a identificação
@@ -47,6 +48,13 @@ conjunto motor-bomba. O foco está na relação entre a evidência registrada e 
 decisão técnica. O cenário é simulado e deve ser adaptado aos procedimentos,
 instrumentos e critérios de aceitação adotados pela instituição ou empresa.
 
+A @fig:conjunto-motor-bomba apresenta a disposição simplificada dos componentes.
+O esquema é didático e não especifica dimensões nem instruções de montagem.
+
+::: {.figura #fig:conjunto-motor-bomba titulo="Conjunto motor-bomba" fonte="Elaboração própria com apoio de inteligência artificial (2026)." nota="Esquema ilustrativo, sem escala."}
+![Esquema didático de motor, acoplamento protegido e bomba centrífuga sobre uma base comum.](recursos/conjunto-motor-bomba.png){width=80%}
+:::
+
 ::: objetivo
 Organizar um registro de medição que identifique o equipamento, o instrumento,
 as condições de verificação e o critério utilizado para interpretar o resultado.
@@ -61,13 +69,17 @@ procedimento. Para interpretar o resultado, é necessário conhecer a unidade,
 a resolução do instrumento, a condição da superfície e os fatores que podem
 influenciar a leitura. Resolução e incerteza são conceitos distintos: o menor
 incremento indicado pelo instrumento não resume todas as fontes de variação.
+O vocabulário de @jcgm2012 fundamenta a distinção entre as grandezas e as
+características do resultado de medição.
 
 Em uma comparação dimensional simples, a diferença entre a leitura observada
-e o valor de referência pode ser representada por:
+e o valor de referência pode ser representada pela @eq:desvio-dimensional.
 
+::: {.equacao #eq:desvio-dimensional titulo="Desvio em relação ao valor de referência" fonte="Elaboração própria, com terminologia baseada em [@jcgm2012]."}
 $$
 \Delta x = x_{\mathrm{observado}} - x_{\mathrm{referência}}.
 $$
+:::
 
 A diferença calculada precisa ser interpretada em conjunto com os limites
 definidos no desenho, no manual ou no procedimento aplicável. Este exemplo não
@@ -80,6 +92,7 @@ evidências que sustentaram a decisão. Fotografias, identificação do instrume
 e referência ao procedimento complementam a descrição textual. A equipe deve
 distinguir claramente o que foi observado, o que foi calculado e o que ainda
 exige investigação.
+O roteiro de @macedo2026 oferece um exemplo de organização dessas evidências.
 
 # Metodologia
 
@@ -102,17 +115,28 @@ equipamentos nem substitui a análise dos riscos da tarefa.
 
 # Resultados e discussão
 
-A ficha a seguir apresenta a estrutura esperada do registro. Os campos são
-orientações de preenchimento, sem representar resultados experimentais.
+A @tab:desvios-medicao apresenta quatro valores simulados de desvio dimensional.
+Os números servem à discussão didática e não representam resultados de uma
+intervenção real. A ficha de registro deve identificar o equipamento, o
+instrumento, as condições de medição, o resultado e a decisão técnica.
 
-| Campo | Evidência esperada |
-|:---|:---|
-| Equipamento | Identificação do conjunto motor-bomba e da ordem de serviço |
-| Instrumento | Identificação, resolução e condição de uso verificada |
-| Condição inicial | Descrição objetiva do estado encontrado |
-| Resultado | Leitura, unidade, condições e referência do procedimento |
-| Decisão | Comparação com o critério documentado e justificativa |
-| Verificação final | Evidência de revisão e responsável pelo registro |
+::: {.tabela #tab:desvios-medicao titulo="Desvios dimensionais em verificações simuladas" fonte="Elaboração própria, com dados simulados para fins didáticos (2026)." nota="A sequência não demonstra a eficácia de uma manutenção real." manter_junto="true"}
+| Verificação | Desvio dimensional (mm) |
+|:---|---:|
+| 1ª | 0,18 |
+| 2ª | 0,12 |
+| 3ª | 0,07 |
+| 4ª | 0,03 |
+:::
+
+O @gra:desvios-medicao exemplifica a leitura de uma sequência de verificações.
+Os quatro valores são simulados para ensinar a interpretação de registros;
+não descrevem o desempenho de uma intervenção real. A unidade e as condições
+de medição continuam necessárias para interpretar uma diferença [@jcgm2012].
+
+::: {.grafico #gra:desvios-medicao titulo="Desvio dimensional em verificações simuladas" fonte="Elaboração própria, com dados simulados para fins didáticos (2026)." nota="Valores simulados: 0,18; 0,12; 0,07 e 0,03 mm. A sequência não representa dados experimentais."}
+![Gráfico dos quatro desvios dimensionais simulados, em milímetros.](recursos/grafico-medicoes.pdf){width=85%}
+:::
 
 A organização por campos reduz a possibilidade de confundir uma observação
 com sua interpretação. Se o registro não identifica a unidade ou o critério de
@@ -140,6 +164,5 @@ nas referências do trabalho.
 
 # Referências {.unnumbered}
 
-MACEDO, Richar Allan. **Apostila de Manutenção Mecânica**. Rondonópolis:
-Modelos LaTeX SENAI Rondonópolis, 2026. Material didático do repositório,
-disponível em `documentos/apostila-exemplo.md`.
+::: {#refs}
+:::

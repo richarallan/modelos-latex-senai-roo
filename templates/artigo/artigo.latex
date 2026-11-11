@@ -66,14 +66,23 @@ $if(csl-refs)$
 \setlength{\cslhangindent}{1.5em}
 \newlength{\csllabelwidth}
 \setlength{\csllabelwidth}{3em}
+$if(senai-csl-legado)$
+% Compatibilidade com as entradas em parágrafos do citeproc do Pandoc 2.17.
 \newenvironment{CSLReferences}[2]
- {\begin{list}{}{%
+ {\begingroup\setstretch{1}\setlength{\parindent}{0pt}%
+  \ifodd #1\everypar{\hangindent=\cslhangindent}\fi
+  \setlength{\parskip}{#2\baselineskip}}
+ {\par\endgroup}
+$else$
+\newenvironment{CSLReferences}[2]
+ {\begingroup\setstretch{1}\begin{list}{}{%
   \setlength{\itemindent}{0pt}\setlength{\leftmargin}{0pt}\setlength{\parsep}{0pt}
   \ifodd #1
     \setlength{\leftmargin}{\cslhangindent}\setlength{\itemindent}{-1\cslhangindent}
   \fi
   \setlength{\itemsep}{#2\baselineskip}}}
- {\end{list}}
+ {\end{list}\endgroup}
+$endif$
 \usepackage{calc}
 \newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}

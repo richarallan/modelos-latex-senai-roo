@@ -224,6 +224,21 @@ por exemplo `# Referências {.unnumbered}`. Blocos pedagógicos, tabelas e fórm
 continuam disponíveis. O exemplo é didático e reduzido; não representa uma
 pesquisa de campo.
 
+## Citações e elementos numerados
+
+O mesmo comando gera citações autor-data com links para uma bibliografia
+CSL-YAML/JSON e referências cruzadas para figuras, gráficos, tabelas e equações.
+No Markdown, use `bibliografia: referencias/artigo.yaml`, identificadores como
+`#fig:motor-bomba` em blocos `.figura` e chamadas `@fig:motor-bomba` no texto.
+Título, fonte e nota são informados nos próprios blocos Markdown; os números
+acompanham a ordem dos elementos a cada geração.
+
+Veja a sintaxe completa, as normas consultadas e os limites da implementação
+em [Critérios editoriais](docs/criterios-editoriais.md). O exemplo de artigo
+inclui uma ilustração motor-bomba, gráfico e tabela com dados simulados e uma
+equação, todos identificados e com suas fontes. O layout institucional aprovado
+permanece na classe `senaiarticle`.
+
 ## Testes e integração contínua
 
 ```bash

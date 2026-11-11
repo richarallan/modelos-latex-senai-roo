@@ -1,0 +1,26 @@
+references:
+  - id: jcgm2012
+    type: report
+    author:
+      - literal: JCGM
+    title: "International vocabulary of metrology: basic and general concepts and associated terms (VIM)"
+    edition: "3"
+    issued:
+      date-parts: [[2012]]
+    publisher: BIPM
+    publisher-place: Sèvres
+    number: "JCGM 200:2012"
+
+  - id: macedo2026
+    type: report
+    author:
+      - family: Macedo
+        given: Richar Allan
+    title: "Apostila de Manutenção Mecânica"
+    issued:
+      date-parts: [[2026]]
+    publisher: "Modelos LaTeX SENAI Rondonópolis"
+    publisher-place: Rondonópolis
+    URL: "https://github.com/richarallan/modelos-latex-senai-roo/blob/feat/primeiro-mvp-documentos/documentos/apostila-exemplo.md"
+    accessed:
+      date-parts: [[2026, 11, 11]]
