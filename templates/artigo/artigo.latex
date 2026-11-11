@@ -157,7 +157,8 @@ $for(author)$
 $author$\par
 $endfor$
 }
-\vspace{1cm}
+% Centralização vertical do conjunto título, natureza do trabalho e orientação.
+\vspace{4.5cm}
 {\bfseries\MakeUppercase{$title$}\par}
 $if(subtitle)$
 \vspace{0.3cm}
