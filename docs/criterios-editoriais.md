@@ -246,6 +246,14 @@ São erros: recurso/bibliografia inexistente, ID inválido ou repetido, objeto
 sem título/fonte exigidos, referência cruzada ausente e citação sem cadastro.
 Avisos do Pandoc/citeproc tornam a execução malsucedida.
 
+O CI em Ubuntu 24.04 utiliza o Pandoc 3.1.3 do repositório da distribuição.
+Essa versão ainda escreve as referências como parágrafos, enquanto o Pandoc
+3.1.11.1 usa itens bibliográficos. O filtro inspeciona a convenção real do
+writer para selecionar o ambiente compatível; o número principal da versão
+não é suficiente para essa decisão. As versões verificadas para esse caminho
+incluem 2.17.1.1, 3.1.3 e 3.1.11.1. O workflow registra as versões das ferramentas
+nos logs de instalação para facilitar a reprodução de falhas.
+
 Os testes inserem e reorganizam objetos dos quatro tipos, verificam as chamadas
 e os destinos, exercitam citações narrativas/parentéticas e compilam um PDF sem
 interrogações de referências não resolvidas. Uma pergunta legítima em outro

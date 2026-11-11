@@ -57,6 +57,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes pandoc texlive-xetex texlive-latex-extra \
             texlive-fonts-recommended texlive-plain-generic poppler-utils
+          pandoc --version
+          xelatex --version
 
       - name: Executar testes
         run: python -m unittest discover --start-directory tests --verbose

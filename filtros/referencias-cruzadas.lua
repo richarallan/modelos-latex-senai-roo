@@ -457,9 +457,19 @@ local function renderizar(div)
   return pandoc.Div(saida, pandoc.Attr(latex and "" or div.identifier))
 end
 
+local function bibliografia_em_paragrafos()
+  -- A transição para bibitem ocorreu dentro da série 3.1. Detectamos a
+  -- convenção do writer, sem presumir que todas as versões 3.x sejam iguais.
+  local entrada = pandoc.Div({pandoc.Para({pandoc.Str("Referência de prova")})},
+    pandoc.Attr("ref-senai-probe", {"csl-entry"}))
+  local referencias = pandoc.Div({entrada},
+    pandoc.Attr("refs", {"references", "csl-bib-body"}))
+  local latex = pandoc.write(pandoc.Pandoc({referencias}), "latex")
+  return not latex:find("\\bibitem", 1, true)
+end
+
 function Pandoc(doc)
-  -- O writer 2.17 usa parágrafos bibliográficos; 3.x usa itens de lista.
-  doc.meta["senai-csl-legado"] = pandoc.MetaBool(PANDOC_VERSION[1] < 3)
+  doc.meta["senai-csl-legado"] = pandoc.MetaBool(bibliografia_em_paragrafos())
   objetos, contadores, paineis, membros_painel = {}, {}, {}, {}
   validar_identificadores(doc)
   doc = doc:walk({Div = anotar_painel})

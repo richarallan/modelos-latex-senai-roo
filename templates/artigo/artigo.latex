@@ -67,7 +67,7 @@ $if(csl-refs)$
 \newlength{\csllabelwidth}
 \setlength{\csllabelwidth}{3em}
 $if(senai-csl-legado)$
-% Compatibilidade com as entradas em parágrafos do citeproc do Pandoc 2.17.
+% Compatibilidade com writers em parágrafos, incluindo Pandoc 2.17 e 3.1.3.
 \newenvironment{CSLReferences}[2]
  {\begingroup\setstretch{1}\setlength{\parindent}{0pt}%
   \ifodd #1\everypar{\hangindent=\cslhangindent}\fi
