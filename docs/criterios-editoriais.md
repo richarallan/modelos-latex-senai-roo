@@ -4,6 +4,11 @@
 
 Consulta realizada em 11 de novembro de 2026. O projeto usa como referencial:
 
+No pedido de ajuste das fórmulas, o número “14742” foi interpretado como
+provável transposição de **14724**: o referencial encontrado para apresentação
+de trabalhos acadêmicos e expressões matemáticas é a **NBR 14724:2024**.
+Essa interpretação não afirma a inexistência de outra norma com o número citado.
+
 | Documento | Aplicação nesta implementação |
 |---|---|
 | ABNT NBR 6022:2018 | Artigo técnico/científico; o modelo institucional aprovado continua determinando as margens, a tipografia e os pré-textuais. |
@@ -15,6 +20,8 @@ Consulta realizada em 11 de novembro de 2026. O projeto usa como referencial:
 Foram consultadas implementações acadêmicas abertas e seus comentários:
 
 - [Modelo de artigo do projeto abnTeX2, versão fixada](https://github.com/abntex/abntex2/blob/0cb2fe32e3ca5dbcbb08098497603777837f5098/doc/latex/abntex2/examples/abntex2-modelo-artigo.tex), que identifica a NBR 6022:2018 e explica que ela não fixa margens específicas para artigos.
+- [Exemplos matemáticos do mesmo projeto](https://github.com/abntex/abntex2/blob/0cb2fe32e3ca5dbcbb08098497603777837f5098/doc/latex/abntex2/examples/abntex2-modelo-include-comandos.tex#L273-L292), com equação destacada e numerada, sem legenda gráfica.
+- [Exemplo matemático da implementação UNIVALI](https://github.com/fockingf/template-latex-univali/blob/ce0a677426f796c91bbe2e03202e57faf2c64308/tex/fundamentacao-teorica.tex#L106-L118), com referência cruzada e explicação de variáveis em prosa.
 - [Referências do mesmo modelo](https://github.com/abntex/abntex2/blob/0cb2fe32e3ca5dbcbb08098497603777837f5098/doc/latex/abntex2/examples/referencias.bib), incluindo a publicação tabular do IBGE.
 - [Implementação acadêmica para UNIVALI, versão fixada](https://github.com/fockingf/template-latex-univali/blob/ce0a677426f796c91bbe2e03202e57faf2c64308/README.md), que declara as edições 2024/2025/2023 e os critérios de títulos/fontes. Trata-se de uma implementação secundária, não de publicação normativa oficial da universidade.
 - [Implementação acadêmica PPgEA/UFRN](https://github.com/paoloo/PPGEA-UFRN-Template), que também documenta as edições adotadas.
@@ -36,15 +43,22 @@ O CSL é comunitário e tem licença própria, preservada no repositório.
   DOI/URL e acesso vêm dos dados bibliográficos fornecidos, sem preenchimento inventado.
 - Figuras e gráficos têm identificação, número arábico, travessão e título
   acima da imagem. A fonte aparece abaixo, inclusive nas elaborações próprias.
-  A nota aparece somente quando informada. Ambos ficam alinhados à esquerda
-  dentro da largura da imagem; a imagem é centralizada.
+  A nota aparece somente quando informada. Nos elementos isolados, que ocupam
+  uma linha de composição, a legenda fica centralizada na largura do bloco;
+  fonte e nota continuam à esquerda. Nos painéis de duas ou mais imagens,
+  títulos e conteúdo das células alinham à esquerda e pelo topo. Essa distinção
+  estética foi solicitada para o projeto; não é atribuída como imposição da ABNT.
 - Tabelas têm título acima, cabeçalhos e regras horizontais, fonte e nota
   abaixo, com laterais abertas. O exemplo numérico e o gráfico compartilham
   os mesmos quatro valores, explicitamente simulados. Conteúdo predominantemente
   textual costuma exigir tratamento de quadro, que não foi acrescentado nesta etapa.
-- Equações destacadas recebem números entre parênteses à direita. O título e
-  a fonte adicionais são recursos pedagógicos opcionais do projeto, não uma
-  exigência atribuída à ABNT.
+- Fórmulas destacadas usam espaço suficiente para índices e expoentes. Quando
+  numeradas, recebem algarismos arábicos entre parênteses à direita. A expressão
+  fica centralizada e não recebe legenda gráfica “Equação N — título”. A origem
+  e a explicação podem ser apresentadas em prosa ou citação próxima à fórmula.
+  O campo opcional `titulo`, se mantido em documentos anteriores, é apresentado
+  como prosa introdutória, sem prefixo e sem numeração adicional. `fonte` e
+  `nota` continuam opcionais como recursos pedagógicos, não como exigência normativa.
 - Cada tipo tem sequência própria: Figura 1, Gráfico 1, Tabela 1, Equação (1).
   Essa separação e os links internos são escolhas de implementação. Os números
   são recalculados pela ordem dos objetos a cada geração, nunca pelo nome do ID.
@@ -136,8 +150,9 @@ $$
 
 Cada bloco visual contém exatamente uma imagem ou tabela. Título e fonte são
 obrigatórios para figura, gráfico e tabela; nota é opcional. Na equação, título
-e fonte são opcionais e o conteúdo deve ser uma única expressão matemática
-destacada. Objetos numerados não podem ser aninhados.
+e fonte são opcionais e o conteúdo deve ser um bloco matemático destacado.
+Objetos numerados não podem ser aninhados em outro objeto numerado; o painel
+descrito abaixo é um container sem número, com filhos visuais identificados.
 
 Título, fonte e nota aceitam texto Markdown simples e citações, por exemplo
 `fonte="Adaptado de [@silva2023]."`. Figuras e gráficos aceitam imagens em
@@ -154,6 +169,66 @@ As chamadas `@fig:motor-bomba` etc. já incluem o tipo e o número. São resolvi
 mesmo quando aparecem antes do objeto. Ao inserir ou reorganizar os blocos,
 gere novamente o documento: rótulos e chamadas acompanham a nova ordem.
 Não é necessário escrever comandos LaTeX de legenda, numeração, `label` ou `ref`.
+
+## Fórmulas simples e em várias linhas
+
+A numeração é aplicada aos blocos `.equacao` com ID estável, necessários às
+chamadas no texto. Fórmulas em linha (`$...$`) e expressões soltas (`$$...$$`)
+permanecem sem essa numeração. O ambiente matemático comporta frações,
+expoentes e índices sem reduzir a entrelinha do texto para acomodá-los.
+
+```markdown
+A relação é apresentada na @eq:desvio-relativo.
+
+::: {.equacao #eq:desvio-relativo}
+$$
+\varepsilon_r &= \frac{\Delta x}{x_{referencia}} \\
+E_r &= 100\,\varepsilon_r
+$$
+:::
+```
+
+As quebras matemáticas `\\` e os marcadores `&` são organizados em `aligned`
+pelo filtro quando aparecem no nível externo da expressão. Ambientes já
+escritos pelo autor são preservados: um `aligned` externo não é duplicado e
+`cases` ou matrizes internas podem participar de uma expressão maior, alinhada.
+Marcadores escapados e comentários não provocam alinhamento. O bloco recebe
+um único número à direita, inclusive quando tem mais de uma linha.
+As quebras devem respeitar o raciocínio matemático;
+não há tentativa de partir automaticamente uma expressão em qualquer símbolo.
+
+## Imagens lado a lado
+
+Use `.figura`, `.grafico` ou os aliases `.ilustracao` e `.desenho`. Os dois
+aliases compartilham a designação e a sequência **Figura**, com IDs `fig:`.
+Elementos isolados têm título centralizado; o painel torna explícita a escolha
+de colocar imagens lado a lado, evitando depender da proporção do arquivo.
+
+```markdown
+:::: {.painel-imagens colunas=2}
+::: {.desenho #fig:motor titulo="Motor elétrico" fonte="Elaboração própria (2026)."}
+![Motor elétrico.](recursos/motor-eletrico.png){width=100%}
+:::
+
+::: {.ilustracao #fig:bomba titulo="Bomba centrífuga" fonte="Elaboração própria (2026)."}
+![Bomba centrífuga.](recursos/bomba-centrifuga.png){width=100%}
+:::
+::::
+```
+
+O painel aceita de duas a quatro colunas, com duas por padrão, e pelo menos
+dois elementos visuais como filhos diretos. Cada elemento mantém ID, título,
+fonte, nota e chamada próprios. A contagem continua na ordem de leitura do
+documento; o painel não cria uma segunda numeração. Elementos excedentes são
+distribuídos em novas linhas, com espaçamento entre células e alinhamento no topo.
+
+A largura da imagem é relativa à célula; `width=100%` aproveita sua área útil.
+No painel, são aceitas larguras percentuais maiores que zero e até 100%; medidas
+absolutas ficam reservadas aos objetos isolados para evitar ultrapassar a célula.
+Títulos e conteúdo das células ficam à esquerda. Tabelas, equações e painéis
+aninhados são rejeitados dentro desse container. Figuras muito detalhadas ou
+legendas extensas devem ficar isoladas para preservar a legibilidade. Fontes
+e notas seguem obrigatórias/opcionais conforme as mesmas regras do objeto isolado.
 
 ## Geração e validação
 

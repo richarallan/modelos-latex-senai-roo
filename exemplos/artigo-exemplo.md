@@ -55,6 +55,20 @@ O esquema é didático e não especifica dimensões nem instruções de montagem
 ![Esquema didático de motor, acoplamento protegido e bomba centrífuga sobre uma base comum.](recursos/conjunto-motor-bomba.png){width=80%}
 :::
 
+As vistas isoladas da @fig:motor-eletrico e da @fig:bomba-centrifuga permitem
+observar os componentes no mesmo painel. São ilustrações didáticas, sem escala
+e sem indicação de dimensões construtivas.
+
+:::: {.painel-imagens colunas=2}
+::: {.desenho #fig:motor-eletrico titulo="Motor elétrico" fonte="Elaboração própria com apoio de inteligência artificial (2026)." nota="Componente ilustrativo, sem escala."}
+![Vista didática de um motor elétrico com eixo à direita.](recursos/motor-eletrico.png){width=100%}
+:::
+
+::: {.ilustracao #fig:bomba-centrifuga titulo="Bomba centrífuga" fonte="Elaboração própria com apoio de inteligência artificial (2026)." nota="Componente ilustrativo, sem escala."}
+![Vista didática de uma bomba centrífuga com saída superior.](recursos/bomba-centrifuga.png){width=100%}
+:::
+::::
+
 ::: objetivo
 Organizar um registro de medição que identifique o equipamento, o instrumento,
 as condições de verificação e o critério utilizado para interpretar o resultado.
@@ -75,15 +89,27 @@ características do resultado de medição.
 Em uma comparação dimensional simples, a diferença entre a leitura observada
 e o valor de referência pode ser representada pela @eq:desvio-dimensional.
 
-::: {.equacao #eq:desvio-dimensional titulo="Desvio em relação ao valor de referência" fonte="Elaboração própria, com terminologia baseada em [@jcgm2012]."}
+::: {.equacao #eq:desvio-dimensional}
 $$
-\Delta x = x_{\mathrm{observado}} - x_{\mathrm{referência}}.
+\Delta x = x_{\mathrm{observado}} - x_{\mathrm{referência}}
 $$
 :::
 
 A diferença calculada precisa ser interpretada em conjunto com os limites
 definidos no desenho, no manual ou no procedimento aplicável. Este exemplo não
 estabelece tolerâncias universais para equipamentos de manutenção.
+
+Quando o valor de referência é diferente de zero, a @eq:desvio-relativo
+relaciona o desvio relativo e seu valor em percentagem. As duas linhas formam
+um único bloco matemático: $\varepsilon_r$ representa a razão e $E_r$ expressa
+o resultado percentual. São relações didáticas, sem definir limites de aceitação.
+
+::: {.equacao #eq:desvio-relativo}
+$$
+\varepsilon_r &= \frac{\Delta x}{x_{\mathrm{referência}}} \\
+E_r &= 100\,\varepsilon_r
+$$
+:::
 
 ## Rastreabilidade do registro
 

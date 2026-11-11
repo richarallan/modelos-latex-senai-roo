@@ -233,10 +233,17 @@ No Markdown, use `bibliografia: referencias/artigo.yaml`, identificadores como
 Título, fonte e nota são informados nos próprios blocos Markdown; os números
 acompanham a ordem dos elementos a cada geração.
 
+Elementos visuais isolados têm o título centralizado; o container
+`.painel-imagens` organiza duas a quatro colunas com títulos à esquerda.
+Fórmulas seguem a apresentação matemática referenciada na NBR 14724:2024:
+destaque e número entre parênteses à direita, sem legenda gráfica automática.
+Quebras matemáticas com `\\` e alinhamentos com `&` são organizados pelo filtro.
+
 Veja a sintaxe completa, as normas consultadas e os limites da implementação
 em [Critérios editoriais](docs/criterios-editoriais.md). O exemplo de artigo
-inclui uma ilustração motor-bomba, gráfico e tabela com dados simulados e uma
-equação, todos identificados e com suas fontes. O layout institucional aprovado
+inclui uma ilustração motor-bomba, painel de componentes, gráfico e tabela com
+dados simulados e fórmulas numeradas. As fontes e os critérios estão registrados
+no conteúdo. O layout institucional aprovado
 permanece na classe `senaiarticle`.
 
 ## Testes e integração contínua

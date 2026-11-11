@@ -65,8 +65,9 @@ O estilo bibliográfico `templates/bibliografia/abnt-autor-data.csl` é de
 fixadas em [FONTE.md](templates/bibliografia/FONTE.md). Ele mantém essa licença
 própria, distinta da CC0 aplicada ao código original do projeto.
 
-A ilustração motor-bomba foi gerada para o exemplo com apoio de inteligência
-artificial. O gráfico utiliza quatro dados simulados para fins didáticos.
+A ilustração motor-bomba e as vistas isoladas de motor e bomba foram geradas
+para o exemplo com apoio de inteligência artificial. O gráfico utiliza quatro
+dados simulados para fins didáticos.
 Ambos têm suas fontes explicitadas no Markdown e no PDF, sem representar
 resultados experimentais ou projetos construtivos de equipamentos.
 
