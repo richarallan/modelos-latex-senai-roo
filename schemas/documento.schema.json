@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/richarallan/modelos-latex-senai-roo/schemas/documento.schema.json",
+  "title": "Documento canônico do projeto Modelos LaTeX SENAI Rondonópolis",
+  "description": "Metadados mínimos compartilhados por documentos produzidos por pessoas ou por assistentes de IA.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "versao_schema",
+    "tipo_documento",
+    "titulo",
+    "autor",
+    "instituicao",
+    "unidade_operacional",
+    "unidade_curricular",
+    "publico",
+    "carga_horaria"
+  ],
+  "properties": {
+    "versao_schema": {
+      "const": 1,
+      "description": "Versão do contrato documental."
+    },
+    "tipo_documento": {
+      "type": "string",
+      "enum": ["atividade_avaliativa", "nota_aula"]
+    },
+    "modelo": {
+      "type": "string",
+      "enum": ["artigo"],
+      "description": "Apresentação opcional, independente do tipo documental. Sem este campo, mantém o modelo neutro do MVP."
+    },
+    "pre_textuais": {
+      "type": "boolean",
+      "default": true,
+      "description": "No modelo artigo, inclui capa, folha de rosto e termo de aprovação."
+    },
+    "resumo": {
+      "type": "string",
+      "minLength": 1
+    },
+    "email": {
+      "type": "string",
+      "minLength": 1
+    },
+    "curso": {
+      "type": "string",
+      "minLength": 1
+    },
+    "habilitacao": {
+      "type": "string",
+      "minLength": 1
+    },
+    "local": {
+      "type": "string",
+      "minLength": 1
+    },
+    "orientador": {
+      "type": "string",
+      "minLength": 1
+    },
+    "coordenacao": {
+      "type": "string",
+      "minLength": 1
+    },
+    "banca": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "data_aprovacao": {
+      "type": "string"
+    },
+    "titulo": {
+      "type": "string",
+      "minLength": 3
+    },
+    "subtitulo": {
+      "type": "string"
+    },
+    "autor": {
+      "description": "Nome de autoria ou lista de nomes na ordem de apresentação.",
+      "oneOf": [
+        {"type": "string", "minLength": 3},
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 3}
+        }
+      ]
+    },
+    "instituicao": {
+      "type": "string",
+      "minLength": 2
+    },
+    "unidade_operacional": {
+      "type": "string",
+      "minLength": 2
+    },
+    "unidade_curricular": {
+      "type": "string",
+      "minLength": 2
+    },
+    "publico": {
+      "type": "string",
+      "minLength": 2
+    },
+    "carga_horaria": {
+      "type": "string",
+      "pattern": "^[0-9]+([,.][0-9]+)?\\s*(h|min)$"
+    },
+    "data": {
+      "type": "string"
+    },
+    "idioma": {
+      "type": "string",
+      "default": "pt-BR"
+    },
+    "palavras_chave": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "bibliografia": {
+      "description": "Arquivo(s) CSL-YAML ou CSL-JSON, relativos ao Markdown; cada referência tem id estável.",
+      "oneOf": [
+        {"type": "string", "minLength": 1},
+        {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+      ]
+    }
+  }
+}

@@ -5,28 +5,37 @@ on:
   push:
     branches:
       - main
+      - feat/primeiro-mvp-documentos
     paths:
       - "documentos/**"
+      - "exemplos/**"
       - "filtros/**"
+      - "schemas/**"
       - "scripts/**"
       - "templates/**"
+      - "tests/**"
+      - "requirements.txt"
       - ".github/workflows/compilar-documentos.yml"
   pull_request:
     branches:
       - main
     paths:
       - "documentos/**"
+      - "exemplos/**"
       - "filtros/**"
+      - "schemas/**"
       - "scripts/**"
       - "templates/**"
+      - "tests/**"
+      - "requirements.txt"
       - ".github/workflows/compilar-documentos.yml"
 
 permissions:
   contents: read
 
 jobs:
-  compilar:
-    name: Gerar LaTeX, PDF e DOCX
+  validar-e-compilar:
+    name: Validar e gerar documentos
     runs-on: ubuntu-24.04
     timeout-minutes: 20
 
@@ -38,14 +47,30 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências Python
+        run: pip install --requirement requirements.txt
 
       - name: Instalar Pandoc e XeLaTeX
         run: |
           sudo apt-get update
-          sudo apt-get install --yes pandoc texlive-xetex texlive-latex-extra
+          sudo apt-get install --yes pandoc texlive-xetex texlive-latex-extra \
+            texlive-fonts-recommended texlive-plain-generic poppler-utils
+          pandoc --version
+          xelatex --version
+
+      - name: Executar testes
+        run: python -m unittest discover --start-directory tests --verbose
+
+      - name: Validar documentos
+        run: python scripts/renderizar.py --validar-apenas
 
       - name: Compilar documentos
-        run: python scripts/renderizar.py --formato todos
+        run: python scripts/renderizar.py --formato tex,pdf
+
+      - name: Verificar DOCX dos modelos anteriores
+        run: python scripts/renderizar.py exemplos/atividade-usinagem.md exemplos/nota-aula-metrologia.md --formato docx
 
       - name: Publicar artefatos
         uses: actions/upload-artifact@v4

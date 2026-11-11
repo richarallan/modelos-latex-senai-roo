@@ -1,13 +1,16 @@
 ---
-title: "Apostila de Manutenção Mecânica"
-subtitle: "Exemplo mínimo do fluxo Markdown → LaTeX, PDF e DOCX"
-author: "Richar Allan Macedo"
-date: "2026"
-lang: pt-BR
-papersize: a4
-geometry: margin=2.5cm
-fontsize: 11pt
-colorlinks: true
+versao_schema: 1
+tipo_documento: nota_aula
+titulo: "Apostila de Manutenção Mecânica"
+subtitulo: "Exemplo mínimo do fluxo canônico"
+autor: "Richar Allan Macedo"
+instituicao: "SENAI/MT"
+unidade_operacional: "Rondonópolis"
+unidade_curricular: "Manutenção Mecânica Aplicada"
+publico: "Educação profissional"
+carga_horaria: "5 h"
+data: "2026"
+idioma: "pt-BR"
 ---
 
 # Apresentação
@@ -26,7 +29,7 @@ manutenção e registrar evidências técnicas da atividade executada.
 Antes de iniciar a atividade, a equipe deve interpretar a ordem de serviço,
 reconhecer as fontes de energia e definir o método de bloqueio aplicável.
 
-::: atencao
+::: seguranca
 Uma máquina parada não está necessariamente desenergizada. A ausência de
 energia deve ser verificada por procedimento e instrumento adequados.
 :::
@@ -40,9 +43,6 @@ energia deve ser verificada por procedimento e instrumento adequados.
 5. Verificar a condição segura antes de intervir.
 
 # Registro técnico
-
-O registro deve permitir que outra pessoa compreenda o estado encontrado, o
-serviço realizado e os critérios utilizados para liberar o equipamento.
 
 | Evidência | Exemplo de registro |
 |---|---|
@@ -59,7 +59,8 @@ evidências necessárias para a liberação final.
 
 # Critérios de avaliação
 
-- identifica fontes de energia e perigos relevantes;
-- seleciona medidas de controle coerentes com a situação;
-- utiliza linguagem técnica e registros verificáveis;
-- comunica a sequência de trabalho com clareza.
+::: rubrica
+O estudante identifica fontes de energia e perigos relevantes, seleciona
+medidas de controle coerentes e registra a sequência de trabalho com linguagem
+técnica e evidências verificáveis.
+:::
