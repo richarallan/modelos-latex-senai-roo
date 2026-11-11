@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Perfil de apresentação documental",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["versao", "id", "tipos_documentais", "template", "classe", "opcoes_classe", "formatos", "sumario", "pre_textuais"],
+  "properties": {
+    "versao": {"const": 1},
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "tipos_documentais": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["nota_aula", "atividade_avaliativa"]}},
+    "template": {"type": ["string", "null"], "minLength": 1},
+    "classe": {"type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"},
+    "opcoes_classe": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-zA-Z0-9_=-]+$"}},
+    "formatos": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["tex", "pdf", "docx"]}},
+    "sumario": {"type": "boolean"},
+    "pre_textuais": {"type": "boolean"},
+    "recursos": {"type": "object", "additionalProperties": {"type": "string", "minLength": 1}}
+  }
+}

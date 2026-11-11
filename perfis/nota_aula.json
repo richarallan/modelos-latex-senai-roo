@@ -1,0 +1,17 @@
+{
+  "versao": 1,
+  "id": "nota_aula",
+  "tipos_documentais": [
+    "nota_aula"
+  ],
+  "template": null,
+  "classe": "senaiarticle",
+  "opcoes_classe": [],
+  "formatos": [
+    "tex",
+    "pdf",
+    "docx"
+  ],
+  "sumario": true,
+  "pre_textuais": false
+}

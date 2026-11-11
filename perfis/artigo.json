@@ -1,0 +1,22 @@
+{
+  "versao": 1,
+  "id": "artigo",
+  "tipos_documentais": [
+    "nota_aula",
+    "atividade_avaliativa"
+  ],
+  "template": "templates/artigo/artigo.latex",
+  "classe": "senaiarticle",
+  "opcoes_classe": [
+    "artigo"
+  ],
+  "formatos": [
+    "tex",
+    "pdf"
+  ],
+  "sumario": false,
+  "pre_textuais": true,
+  "recursos": {
+    "logo-artigo": "templates/artigo/recursos/logo-senai.png"
+  }
+}

@@ -35,7 +35,7 @@ O CSL é comunitário e tem licença própria, preservada no repositório.
 
 ## Decisões de apresentação
 
-- As chamadas usam autor-data: `Silva (2023)` ou `(Silva, 2023)`. Sobrenomes em
+- As chamadas usam autor-data: `JCGM (2012)` ou `(JCGM, 2012)`. Sobrenomes em
   caixa mista nas chamadas seguem o referencial de 2023; siglas institucionais
   preservam sua grafia. Citações diretas devem informar página ou outro localizador.
 - O citeproc gera as referências em ordem alfabética e faz a desambiguação de
@@ -64,7 +64,9 @@ O CSL é comunitário e tem licença própria, preservada no repositório.
   são recalculados pela ordem dos objetos a cada geração, nunca pelo nome do ID.
 - As legendas/fontes/notas usam 10 pontos e entrelinha de 12 pontos. As
   referências usam espaço simples. Corpo, capas, folha de rosto, autores,
-  logotipo e regras condicionais de cidade/data permanecem no modelo aprovado.
+  logotipo e regras condicionais de cidade/data preservam a composição aprovada.
+  No núcleo consolidado, campos sem conteúdo não geram rótulos, linhas de
+  assinatura ou páginas vazias; a aprovação exige dados efetivos.
 
 ## Bibliografia estruturada e chamadas
 
@@ -79,25 +81,26 @@ ou CSL-JSON com uma lista na raiz. BibTeX não é aceito por esta interface.
 
 ```yaml
 references:
-  - id: silva2023
-    type: book
+  - id: jcgm2012
+    type: report
     author:
-      - family: Silva
-        given: Ana
-    title: "Manual de inspeção mecânica"
+      - literal: JCGM
+    title: "International vocabulary of metrology: basic and general concepts and associated terms (VIM)"
+    edition: "3"
     issued:
-      date-parts: [[2023]]
-    publisher: "Editora de exemplo"
-    publisher-place: "Cuiabá"
+      date-parts: [[2012]]
+    publisher: BIPM
+    publisher-place: Sèvres
+    number: "JCGM 200:2012"
 ```
 
-O exemplo acima é uma referência fictícia para demonstrar a sintaxe. O artigo
-do repositório possui sua própria bibliografia em
+O exemplo acima usa uma publicação real com autoria corporativa, sem dados
+pessoais fictícios. O artigo do repositório mantém sua bibliografia em
 [`exemplos/referencias/artigo.yaml`](../exemplos/referencias/artigo.yaml).
 
 ```markdown
-Segundo @silva2023, o registro deve permitir a revisão das evidências.
-A mesma origem pode ser chamada entre parênteses [@silva2023, p. 17].
+A terminologia de medição é apresentada por @jcgm2012.
+A mesma obra pode ser chamada entre parênteses [@jcgm2012].
 
 # Referências {.unnumbered}
 
@@ -155,7 +158,7 @@ Objetos numerados não podem ser aninhados em outro objeto numerado; o painel
 descrito abaixo é um container sem número, com filhos visuais identificados.
 
 Título, fonte e nota aceitam texto Markdown simples e citações, por exemplo
-`fonte="Adaptado de [@silva2023]."`. Figuras e gráficos aceitam imagens em
+`fonte="Adaptado de [@jcgm2012]."`. Figuras e gráficos aceitam imagens em
 formatos compatíveis com XeLaTeX, como PNG e PDF; o gráfico do exemplo é vetorial.
 As tabelas podem continuar em outras páginas; revise a composição de tabelas
 longas no documento final, inclusive identificação de continuação conforme a
@@ -262,3 +265,31 @@ documento não deve ser confundida com uma referência quebrada.
 A ilustração motor-bomba foi criada para este exemplo com apoio de inteligência
 artificial. O gráfico contém dados simulados, não resultados de pesquisa ou de
 uma manutenção real. Essas origens também aparecem no PDF, junto aos elementos.
+
+
+## Núcleo documental e catálogo compartilhado
+
+A consolidação separa Markdown/YAML, interpretação e geração comuns, perfis
+documentais e apresentação visual. Os perfis `artigo`, `nota_aula` e
+`atividade_avaliativa` consomem a mesma representação semântica Pandoc JSON;
+numeração, IDs e validação não são reimplementados por template.
+
+A [matriz de cobertura](matriz-cobertura.md) delimita todos os elementos
+suportados e suas condições. O [kit](../kit/README.md) fornece entradas prontas
+e propriedades chave-valor (`identificador`, `titulo`, `arquivo`, `fonte`,
+`nota`, `idioma`); `#id` e imagens Markdown continuam compatíveis. Parágrafos,
+títulos e listas permanecem em Markdown comum.
+
+Capa e folha de rosto mantêm a apresentação institucional aprovada. Orientação,
+contato, coordenação e membros da banca aparecem apenas quando fornecidos;
+campos ausentes não são substituídos por rótulos ou assinaturas vazias. A
+página de aprovação só é criada quando há dados de coordenação, banca ou data
+de aprovação. `pre_textuais: false` continua permitindo iniciar pelo corpo.
+Resumo ausente ou vazio não gera título; palavras-chave ausentes ou em lista
+vazia não geram rótulo. Cidade e data não são inferidas.
+
+O artigo original e seu PDF aprovado permanecem como referência de regressão.
+As [demonstrações do núcleo](../exemplos/nucleo/) são arquivos separados, com
+autoria coletiva e sem pessoas ou contatos inventados. A existência do `.doc`
+de relatório é apenas uma referência para uma etapa posterior, não uma
+implementação de novo modelo.

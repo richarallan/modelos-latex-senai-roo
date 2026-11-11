@@ -6,10 +6,15 @@ on:
     branches:
       - main
       - feat/primeiro-mvp-documentos
+      - feat/nucleo-documental
     paths:
       - "documentos/**"
       - "exemplos/**"
       - "filtros/**"
+      - "nucleo/**"
+      - "perfis/**"
+      - "kit/**"
+      - "docs/**"
       - "schemas/**"
       - "scripts/**"
       - "templates/**"
@@ -23,6 +28,10 @@ on:
       - "documentos/**"
       - "exemplos/**"
       - "filtros/**"
+      - "nucleo/**"
+      - "perfis/**"
+      - "kit/**"
+      - "docs/**"
       - "schemas/**"
       - "scripts/**"
       - "templates/**"
@@ -65,6 +74,9 @@ jobs:
 
       - name: Validar documentos
         run: python scripts/renderizar.py --validar-apenas
+
+      - name: Validar modelos iniciais do kit
+        run: python scripts/renderizar.py kit/modelos/*.md --validar-apenas
 
       - name: Compilar documentos
         run: python scripts/renderizar.py --formato tex,pdf

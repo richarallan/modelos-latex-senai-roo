@@ -1,0 +1,17 @@
+{
+  "versao": 1,
+  "id": "atividade_avaliativa",
+  "tipos_documentais": [
+    "atividade_avaliativa"
+  ],
+  "template": null,
+  "classe": "senaiarticle",
+  "opcoes_classe": [],
+  "formatos": [
+    "tex",
+    "pdf",
+    "docx"
+  ],
+  "sumario": true,
+  "pre_textuais": false
+}

@@ -34,13 +34,13 @@ class ReferenciasTestes(unittest.TestCase):
         self.pasta = Path(self.temporario.name)
         self.escrever_png(self.pasta / "imagem.png")
         self.referencia = {
-            "id": "silva2023",
-            "type": "book",
-            "author": [{"family": "Silva", "given": "Ana"}],
-            "issued": {"date-parts": [[2023]]},
-            "title": "Manual de inspeção mecânica",
-            "publisher": "Editora Didática",
-            "publisher-place": "Cuiabá",
+            "id": "jcgm2012",
+            "type": "report",
+            "author": [{"literal": "JCGM"}],
+            "issued": {"date-parts": [[2012]]},
+            "title": "International vocabulary of metrology: basic and general concepts and associated terms (VIM)",
+            "publisher": "BIPM",
+            "publisher-place": "Sèvres",
         }
 
     @staticmethod
@@ -210,24 +210,24 @@ class ReferenciasTestes(unittest.TestCase):
     def test_bibliografia_relativa_e_citacoes_autor_data_com_links(self) -> None:
         caminho = self.escrever_bibliografia()
         resultado = self.executar(
-            "# Introdução\n\nSegundo @silva2023, o registro deve ser verificável. "
-            "A revisão usa a mesma referência [@silva2023, p. 17].\n",
+            "# Introdução\n\nSegundo @jcgm2012, o registro deve ser verificável. "
+            "A revisão usa a mesma referência [@jcgm2012, p. 17].\n",
             bibliografia=caminho,
         )
         tex = self.ler_tex(resultado)
-        self.assertIn("Manual de inspeção mecânica", self.normalizar(tex))
-        self.assertIn("2023", tex)
+        self.assertIn("International vocabulary of metrology: basic and general concepts and associated terms (VIM)", self.normalizar(tex))
+        self.assertIn("2012", tex)
         self.assertRegex(
             tex,
-            r"\\(?:hypertarget\{ref-silva2023\}|bibitem(?:\[[^\]]*\])?\{ref-silva2023\})",
+            r"\\(?:hypertarget\{ref-jcgm2012\}|bibitem(?:\[[^\]]*\])?\{ref-jcgm2012\})",
         )
-        self.assertGreaterEqual(len(re.findall(r"\\(?:hyperlink|citeproc)\{ref-silva2023\}", tex)), 2)
-        self.assertNotIn("@silva2023", tex)
+        self.assertGreaterEqual(len(re.findall(r"\\(?:hyperlink|citeproc)\{ref-jcgm2012\}", tex)), 2)
+        self.assertNotIn("@jcgm2012", tex)
 
     def test_bibliografia_ausente_ids_duplicados_e_citacao_desconhecida_falham(self) -> None:
         casos = [
-            ("arquivo-ausente", "bibliografia/inexistente.yaml", [self.referencia], "@silva2023", r"inexistente.yaml|bibliografia"),
-            ("id-duplicado", "bibliografia/referencias.yaml", [self.referencia, self.referencia], "@silva2023", r"duplic"),
+            ("arquivo-ausente", "bibliografia/inexistente.yaml", [self.referencia], "@jcgm2012", r"inexistente.yaml|bibliografia"),
+            ("id-duplicado", "bibliografia/referencias.yaml", [self.referencia, self.referencia], "@jcgm2012", r"duplic"),
             ("citacao-ausente", "bibliografia/referencias.yaml", [self.referencia], "@naocadastrado2026", r"naocadastrado2026|cita"),
         ]
         for nome, caminho, referencias, corpo, erro in casos:
@@ -240,17 +240,17 @@ class ReferenciasTestes(unittest.TestCase):
     def test_fonte_bibliografica_e_chamada_mista_preservam_os_links(self) -> None:
         bibliografia = self.escrever_bibliografia()
         figura = self.objeto("fig", "alfa", "Esquema técnico").replace(
-            'fonte="Equipe A & B (2026)."', 'fonte="Adaptado de @silva2023."'
+            'fonte="Equipe A & B (2026)."', 'fonte="Adaptado de @jcgm2012."'
         )
         tex = self.ler_tex(
             self.executar(
-                "# Introdução\n\nReferência conjunta [@silva2023; @fig:alfa].\n" + figura,
+                "# Introdução\n\nReferência conjunta [@jcgm2012; @fig:alfa].\n" + figura,
                 bibliografia=bibliografia,
             )
         )
         self.verificar_chamada(tex, "fig", "alfa", 1)
-        self.assertIn("Fonte: Adaptado de Silva", self.normalizar(tex))
-        self.assertGreaterEqual(len(re.findall(r"\\(?:hyperlink|citeproc)\{ref-silva2023\}", tex)), 2)
+        self.assertIn("Fonte: Adaptado de JCGM", self.normalizar(tex))
+        self.assertGreaterEqual(len(re.findall(r"\\(?:hyperlink|citeproc)\{ref-jcgm2012\}", tex)), 2)
 
     def test_yaml_exige_objeto_references_em_vez_de_lista_raiz(self) -> None:
         caminho = self.escrever_bibliografia()
@@ -258,7 +258,7 @@ class ReferenciasTestes(unittest.TestCase):
             yaml.safe_dump([self.referencia], allow_unicode=True), encoding="utf-8"
         )
         resultado = self.executar(
-            "Consultar @silva2023.\n", bibliografia=caminho, validar_apenas=True
+            "Consultar @jcgm2012.\n", bibliografia=caminho, validar_apenas=True
         )
         self.assertNotEqual(resultado.returncode, 0, resultado.stdout)
         self.assertIn("references", resultado.stderr)
@@ -268,16 +268,16 @@ class ReferenciasTestes(unittest.TestCase):
         caminho = self.pasta / "referencias.json"
         caminho.write_text(json.dumps([self.referencia], ensure_ascii=False), encoding="utf-8")
         validacao = self.executar(
-            "Consultar @silva2023.\n", bibliografia=caminho.name, validar_apenas=True
+            "Consultar @jcgm2012.\n", bibliografia=caminho.name, validar_apenas=True
         )
         self.assertEqual(validacao.returncode, 0, validacao.stdout + validacao.stderr)
         self.assertFalse((self.pasta / "saida").exists())
         tex = self.ler_tex(
-            self.executar("Consultar @silva2023.\n", bibliografia=caminho.name)
+            self.executar("Consultar @jcgm2012.\n", bibliografia=caminho.name)
         )
-        self.assertIn("Manual de inspeção mecânica", self.normalizar(tex))
-        self.assertRegex(tex, r"\\(?:hyperlink|citeproc)\{ref-silva2023\}")
-        self.assertNotIn("@silva2023", tex)
+        self.assertIn("International vocabulary of metrology: basic and general concepts and associated terms (VIM)", self.normalizar(tex))
+        self.assertRegex(tex, r"\\(?:hyperlink|citeproc)\{ref-jcgm2012\}")
+        self.assertNotIn("@jcgm2012", tex)
 
     def test_csl_json_rejeita_sintaxe_yaml_e_objeto_references(self) -> None:
         caminho = self.pasta / "referencias.json"
@@ -289,7 +289,7 @@ class ReferenciasTestes(unittest.TestCase):
             with self.subTest(caso=nome):
                 caminho.write_text(conteudo, encoding="utf-8")
                 resultado = self.executar(
-                    "Consultar @silva2023.\n",
+                    "Consultar @jcgm2012.\n",
                     bibliografia=caminho.name,
                     validar_apenas=True,
                 )
@@ -299,7 +299,7 @@ class ReferenciasTestes(unittest.TestCase):
 
     def test_validar_apenas_resolve_citacao_e_objeto_sem_criar_saida(self) -> None:
         bibliografia = self.escrever_bibliografia()
-        corpo = "Consultar @silva2023 e @fig:alfa.\n" + self.objeto("fig", "alfa", "Motor-bomba")
+        corpo = "Consultar @jcgm2012 e @fig:alfa.\n" + self.objeto("fig", "alfa", "Motor-bomba")
         resultado = self.executar(corpo, bibliografia=bibliografia, validar_apenas=True)
         self.assertEqual(resultado.returncode, 0, resultado.stdout + resultado.stderr)
         self.assertNotIn("[renderizar]", resultado.stdout)
@@ -402,8 +402,8 @@ class ReferenciasTestes(unittest.TestCase):
     def test_pdf_resolve_citacoes_objetos_e_numeros_sem_interrogacoes(self) -> None:
         bibliografia = self.escrever_bibliografia()
         corpo = (
-            "# Introdução\n\nSegundo @silva2023, o registro deve ser verificável. "
-            "Confira também [@silva2023, p. 17].\n\n"
+            "# Introdução\n\nSegundo @jcgm2012, o registro deve ser verificável. "
+            "Confira também [@jcgm2012, p. 17].\n\n"
             "Elementos: @fig:alfa, @gra:alfa, @tab:alfa e @eq:alfa.\n"
             + "".join(
                 self.objeto(tipo, "alfa", f"Elemento {tipo} didático", nota=True)
@@ -421,12 +421,12 @@ class ReferenciasTestes(unittest.TestCase):
         )
         texto = re.sub(r"\s+", " ", texto)
         self.assertNotIn("?", texto)
-        self.assertNotIn("@silva2023", texto)
-        self.assertRegex(texto, r"Silva\s*\(2023\)")
-        self.assertRegex(texto, r"\(Silva,\s*2023,\s*p\.\s*17\)")
+        self.assertNotIn("@jcgm2012", texto)
+        self.assertRegex(texto, r"JCGM\s*\(2012\)")
+        self.assertRegex(texto, r"\(JCGM,\s*2012,\s*p\.\s*17\)")
         for chamada in ("Figura 1", "Gráfico 1", "Tabela 1", "Equação (1)"):
             self.assertIn(chamada, texto)
-        self.assertIn("Manual de inspeção mecânica", texto)
+        self.assertIn("International vocabulary of metrology: basic and general concepts and associated terms (VIM)", texto)
         self.assertIn("Fonte: Equipe A & B (2026).", texto)
 
 

@@ -3,80 +3,38 @@
 [![Licença: CC0 1.0](https://img.shields.io/badge/licen%C3%A7a-CC0%201.0-blue.svg)](LICENSE)
 [![Compilar documentos](https://github.com/richarallan/modelos-latex-senai-roo/actions/workflows/compilar-documentos.yml/badge.svg)](https://github.com/richarallan/modelos-latex-senai-roo/actions/workflows/compilar-documentos.yml)
 
-Modelos abertos para criar materiais educacionais com uma fonte única de
-conteúdo. O professor ou uma IA escreve Markdown com metadados YAML; o projeto
-valida essa estrutura e gera LaTeX e PDF via Pandoc e XeLaTeX. Os modelos
-anteriores também mantêm a exportação opcional para DOCX.
+Crie materiais educacionais em Markdown com metadados YAML e gere LaTeX e PDF
+por Pandoc e XeLaTeX em um comando. Artigo institucional, nota de aula e
+atividade avaliativa compartilham o mesmo núcleo de interpretação, validação e
+referenciamento. A apresentação é selecionada por um perfil documental.
 
 > [!IMPORTANT]
 > Este é um projeto independente e não constitui publicação oficial do SENAI.
 > Marcas, logotipos e manuais de identidade visual não são licenciados por este
 > repositório e somente devem ser usados por pessoas autorizadas.
 
-## Princípio do projeto
+## Comece pelo kit
 
-**A IA redige e classifica; o esquema valida; o renderizador formata.**
+O [kit de início rápido](kit/README.md) reúne:
 
-O primeiro MVP mantém três camadas separadas:
+- [Markdown inicial para cada modelo](kit/modelos/);
+- [exemplo mínimo](exemplos/nucleo/minimo.md) e [completo](exemplos/nucleo/completo.md);
+- [exemplos copiáveis de cada elemento](kit/elementos.md);
+- comando de geração e explicação dos campos;
+- [prompt curto para uma IA](kit/prompt-ia.md);
+- [instruções para criar o próximo template](docs/novo-template.md).
 
-1. conteúdo e metadados em Markdown/YAML;
-2. significado dos blocos pedagógicos em JSON Schema e Lua;
-3. apresentação em classe e templates LaTeX, com referência DOCX para os
-   modelos anteriores.
+A [matriz de cobertura](docs/matriz-cobertura.md) define o catálogo, os campos,
+as condições dos opcionais e a cobertura de testes. O artigo aprovado em
+[Markdown](exemplos/artigo-exemplo.md) e [PDF](exemplos/artigo-exemplo.pdf)
+permanece preservado como referência de regressão. As demonstrações do núcleo
+ficam em [exemplos/nucleo/](exemplos/nucleo/).
 
-Assim, a identidade visual poderá evoluir sem reescrever atividades, notas de
-aula ou a lógica de validação.
+## Gere em um comando
 
-## Escopo do primeiro MVP
-
-- tipos documentais `atividade_avaliativa` e `nota_aula`;
-- validação por JSON Schema;
-- blocos para objetivo, situação-problema, questão, segurança, prática e
-  rubrica;
-- classe LaTeX com apresentação neutra e opção institucional de artigo;
-- artigo baseado em `templates/artigo/original/Modelo Artigo.docx`, com capa,
-  folha de rosto e termo de aprovação opcionais;
-- geração de TEX e PDF por um único comando;
-- exportação DOCX preservada para os modelos anteriores; Word do artigo
-  reservado para uma próxima etapa;
-- testes automatizados de validação, conversão e compatibilidade;
-- validação e compilação no GitHub Actions.
-
-## Estrutura
-
-```text
-.
-├── documentos/                         # conteúdos mantidos pelo projeto
-├── exemplos/                           # tipos atuais e apresentação de artigo
-├── schemas/
-│   └── documento.schema.json           # contrato documental
-├── filtros/
-│   └── blocos-senai.lua                # tradução dos blocos semânticos
-├── scripts/
-│   ├── renderizar.py                   # valida e coordena a conversão
-│   └── criar_reference_docx.py         # recria a referência do Word
-├── templates/
-│   ├── latex/classes/senaiarticle.cls  # estrutura e apresentação LaTeX
-│   ├── artigo/artigo.latex             # template Pandoc do artigo
-│   ├── artigo/recursos/logo-senai.png   # marca extraída da referência
-│   ├── artigo/original/                # documentos de referência preservados
-│   └── docx/reference.docx             # estilos do Word
-├── tests/
-│   ├── test_renderizar.py
-│   └── test_artigo.py
-└── .github/workflows/
-    └── compilar-documentos.yml
-```
-
-## Uso rápido
-
-### 1. Instale as dependências
-
-- Python 3.10 ou superior;
-- Pandoc 2.17 ou superior;
-- XeLaTeX com `tcolorbox` e fontes TeX Gyre.
-
-Em Ubuntu ou Debian:
+Instale Python 3.10 ou superior, as dependências Python, Pandoc e XeLaTeX. O CI
+usa Ubuntu 24.04 com o Pandoc 3.1.3 da distribuição; a compatibilidade desse
+writer é verificada diretamente. Em Ubuntu ou Debian:
 
 ```bash
 python -m pip install --requirement requirements.txt
@@ -85,178 +43,159 @@ sudo apt-get install pandoc texlive-xetex texlive-latex-extra \
   texlive-fonts-recommended texlive-plain-generic poppler-utils
 ```
 
-O artigo prioriza Times New Roman e usa fontes livres compatíveis quando ela
-não está disponível, como TeX Gyre Termes ou Liberation Serif.
-O pacote `poppler-utils` permite conferir o conteúdo dos PDFs nos testes.
-
-### 2. Valide o conteúdo
+Na raiz do repositório:
 
 ```bash
-python scripts/renderizar.py --validar-apenas
+python scripts/renderizar.py exemplos/nucleo/artigo-demonstracao.md
 ```
 
-Se um campo obrigatório estiver ausente ou uma imagem local não existir, a
-compilação será interrompida com uma mensagem que identifica o problema.
-
-### 3. Gere os documentos
+O padrão é TEX e PDF. As saídas desse exemplo são
+`dist/exemplos/nucleo/artigo-demonstracao.tex` e
+`dist/exemplos/nucleo/artigo-demonstracao.pdf`. Edite o Markdown; o LaTeX é uma
+saída gerada, não uma segunda fonte de conteúdo.
 
 ```bash
+# Valide sem gerar arquivos.
+python scripts/renderizar.py exemplos/nucleo/completo.md --validar-apenas
+
+# Gere todas as fontes de documentos/ e exemplos/.
 python scripts/renderizar.py
-```
 
-O padrão agora é `tex,pdf`. Para gerar o artigo em um comando:
+# Gere os três perfis em um comando.
+python scripts/renderizar.py exemplos/nucleo/artigo-demonstracao.md exemplos/nucleo/nota-aula-demonstracao.md exemplos/nucleo/atividade-demonstracao.md
 
-```bash
-python scripts/renderizar.py exemplos/artigo-exemplo.md --formato tex,pdf
-```
-
-O renderizador valida os metadados, aplica o template Pandoc com a classe
-`senaiarticle` e compila com XeLaTeX. As saídas são
-`dist/exemplos/artigo-exemplo.tex` e `dist/exemplos/artigo-exemplo.pdf`.
-Uma cópia do PDF de demonstração acompanha o exemplo em
-[`exemplos/artigo-exemplo.pdf`](exemplos/artigo-exemplo.pdf); regenere as saídas
-em `dist/` sempre que alterar o conteúdo.
-
-Para formatos específicos dos modelos anteriores:
-
-```bash
+# Preserve a exportação Word dos perfis pedagógicos anteriores.
 python scripts/renderizar.py exemplos/atividade-usinagem.md --formato pdf,docx
-python scripts/renderizar.py exemplos/nota-aula-metrologia.md --formato tex
-python scripts/renderizar.py exemplos/atividade-usinagem.md --formato todos
 ```
 
-Os resultados são gravados em `dist/` preservando a pasta de origem.
-`todos` mantém TEX, PDF e DOCX para entradas sem `modelo: artigo`. Pedir
-`docx` ou `todos` em um lote que inclua artigo interrompe a execução antes de
-gerar qualquer arquivo, com orientação para usar `tex,pdf`.
+`--saida` escolhe o diretório de saída. `--pandoc` permite informar um
+executável específico. O DOCX do artigo continua reservado para uma próxima
+etapa; pedir DOCX em um lote que inclua esse perfil é rejeitado antes de gerar
+saídas parciais.
 
-## Documento canônico
+## Quatro responsabilidades
 
-Os identificadores internos são previsíveis e não usam espaços ou acentos. O
-texto exibido no documento continua normalmente em português.
+1. **Conteúdo**: Markdown comum para parágrafos, títulos e listas; YAML e
+   propriedades chave-valor para metadados e elementos especializados.
+2. **Núcleo**: leitura, contrato, interpretação semântica, recursos,
+   identificadores, links, numeração, citações e coordenação da geração.
+3. **Perfis documentais**: seleção declarativa de apresentação, classe,
+   formatos permitidos, sumário e pré-textuais.
+4. **Apresentação visual**: templates, classe, estilos e recursos; consome a
+   mesma representação semântica, sem reimplementar a interpretação.
 
-O campo `autor` aceita um nome em texto ou uma lista YAML de nomes. A ordem
-informada é preservada na apresentação:
-
-```yaml
-autor:
-  - "Nome do primeiro autor"
-  - "Nome do segundo autor"
-  - "Nome do terceiro autor"
+```text
+Markdown + YAML → núcleo comum → representação semântica Pandoc JSON
+                                      ↓
+                         perfil + apresentação comum
+                                      ↓
+                           LaTeX → XeLaTeX → PDF
 ```
+
+A fonte é interpretada uma vez para as saídas de cada geração. Os formatos
+consomem a mesma representação: um template não recalcula números, cria um
+segundo sistema de referências ou exige uma versão diferente do conteúdo.
+
+```text
+.
+├── documentos/             # conteúdos mantidos pelo projeto
+├── exemplos/               # artigo de regressão e demonstrações
+├── kit/                    # arquivos iniciais, exemplos e prompt
+├── nucleo/                 # leitura, perfis e geração compartilhados
+│   └── lua/                # interpretação e apresentação dos elementos
+├── perfis/                 # artigo, nota_aula e atividade_avaliativa
+├── schemas/                # contrato dos metadados
+├── filtros/                # entradas dos filtros e compatibilidade legada
+├── scripts/renderizar.py   # interface de linha de comando
+├── templates/              # classe, templates visuais, CSL e referência DOCX
+├── docs/                   # catálogo, critérios e extensão
+└── tests/                  # validação, PDFs e regressão
+```
+
+## Conteúdo e modelos
+
+Os tipos documentais continuam sendo `nota_aula` e `atividade_avaliativa`.
+`modelo` seleciona `artigo`, `nota_aula` ou `atividade_avaliativa`; sem ele, o
+perfil segue o tipo documental. O artigo é uma apresentação dos tipos atuais,
+com o layout institucional aprovado.
 
 ```markdown
 ---
 versao_schema: 1
-tipo_documento: atividade_avaliativa
-titulo: "Pressão de corte e tempo de usinagem"
-autor: "Richar Allan Macedo"
+tipo_documento: nota_aula
+modelo: artigo
+titulo: "Registro técnico de uma atividade"
+autor: "Equipe de elaboração"
 instituicao: "SENAI/MT"
 unidade_operacional: "Rondonópolis"
-unidade_curricular: "Processos de Fabricação Mecânica"
-publico: "Aprendizagem industrial"
+unidade_curricular: "Manutenção Mecânica"
+publico: "Educação profissional"
 carga_horaria: "4 h"
+pre_textuais: false
 ---
 
-::: {.questao #q1 pontos=2 tipo=calculo}
-Determine a rotação adequada para a operação de desbaste.
+# Finalidade
+
+O texto permanece em Markdown comum.
+
+::: {.objetivo identificador="objetivo-registro"}
+Relacionar grandeza, unidade e condição de medição em um registro verificável.
 :::
 ```
 
-Assistentes de IA devem preservar o cabeçalho YAML, os identificadores e a
-sintaxe dos blocos. O conteúdo pode permanecer legível e versionável mesmo sem
-uma ferramenta de IA.
+`autor` aceita texto ou lista YAML, preservando a ordem. Use autoria real,
+institucional ou coletiva; não invente pessoas, contatos ou aprovações.
+Elementos opcionais ausentes ou vazios não criam páginas, títulos ou rótulos.
+Cidade e data são independentes e só aparecem quando fornecidas. A página de
+aprovação exige dados efetivos; orientação sozinha não a cria.
 
-## Apresentação de artigo
+## Elementos compartilhados
 
-O campo opcional `modelo: artigo` seleciona a apresentação; ele não cria um
-novo tipo documental. Continue usando `nota_aula` ou `atividade_avaliativa`
-conforme a finalidade do conteúdo. Sem esse campo, a apresentação anterior é
-preservada.
+O catálogo inclui os sete blocos pedagógicos (`objetivo`,
+`situacao_problema`, `questao`, `seguranca`, `pratica`, `rubrica`, `atencao`),
+figuras, gráficos, tabelas e equações numerados, aliases de ilustração/desenho,
+painéis de duas a quatro colunas, citações autor-data e bibliografia
+CSL-YAML/JSON. Todos os perfis usam os mesmos elementos.
 
-Parta de [`exemplos/artigo-exemplo.md`](exemplos/artigo-exemplo.md), que mantém
-todos os metadados obrigatórios do documento canônico. Acrescente ou ajuste:
+```markdown
+A disposição aparece na @fig:conjunto.
 
-```yaml
-modelo: artigo
-pre_textuais: true
-curso: "Habilitação Técnica em Mecânica"
-habilitacao: "Mecânica"
-local: "Rondonópolis – MT"
-data: "2026"
-resumo: >-
-  Apresente o objetivo, o método, os resultados e as conclusões do trabalho.
-palavras_chave:
-  - manutenção mecânica
-  - metrologia
-  - registro técnico
+::: {.figura identificador="fig:conjunto" titulo="Conjunto motor-bomba" arquivo="imagens/conjunto.png" fonte="Elaboração própria." nota="Esquema sem escala." idioma="pt-BR"}
+:::
 ```
 
-A apresentação preserva o A4, as margens superior/esquerda de 3 cm e
-inferior/direita de 2 cm, a fonte serifada de 12 pontos, o corpo justificado
-com entrelinha de 1,5 e recuo inicial de 1,25 cm. O resumo usa espaço simples;
-os títulos primários são destacados em negrito e caixa alta. Os ajustes de
-espaçamento e alinhamento seguem a estrutura institucional da referência.
+O arquivo deve existir relativamente ao Markdown. Identificador, título,
+arquivo, fonte, nota e idioma são propriedades chave-valor; as formas anteriores
+`#id` e `![Descrição](arquivo)` continuam aceitas. A fonte e o título são
+obrigatórios nos três tipos visuais; na equação, esses campos são opcionais.
+As chamadas acompanham a numeração recalculada após inserir ou reorganizar
+objetos.
 
-Por padrão, o artigo inclui capa, folha de rosto e termo de aprovação. Use
-`pre_textuais: false` para começar diretamente pelo título e resumo. Os campos
-opcionais `orientador`, `coordenacao`, `banca` (lista de nomes),
-`data_aprovacao` e `email` permitem completar a identificação. Nomes de
-avaliadores, resultado e data de aprovação não são inventados: os campos não
-informados ficam sem preenchimento.
+Uma imagem isolada mantém o título centralizado; painéis lado a lado usam
+alinhamento à esquerda. Equações recebem número à direita, sem legenda gráfica
+automática. Os critérios e as fontes normativas consultadas estão em
+[Critérios editoriais](docs/criterios-editoriais.md).
 
-Na ausência de `curso` ou `habilitacao`, usa-se `unidade_curricular`. Cidade e
-data são exibidas somente quando `local` e `data` forem informados no Markdown,
-cada um de forma independente. A cidade não é inferida de `unidade_operacional`;
-a aprovação usa apenas `data_aprovacao`, quando fornecida. A capa mantém o logo
-institucional sem repetir a instituição e a unidade abaixo dele.
-Resumo e palavras-chave são opcionais no esquema, mas devem
-ser preenchidos em um artigo completo. A referência recomenda um resumo de
-100 a 250 palavras; o renderizador não acrescenta texto para atingir esse
-limite nem o número de páginas indicado no documento original.
+## Validação e testes
 
-A linha “Palavras-chave” aparece somente quando `palavras_chave` contém itens,
-mesmo que o resumo não tenha sido informado. Com o campo ausente ou uma lista
-vazia (`[]`), a linha é omitida.
-
-Escreva as seções em Markdown. Para referências e anexos sem numeração, use
-por exemplo `# Referências {.unnumbered}`. Blocos pedagógicos, tabelas e fórmulas
-continuam disponíveis. O exemplo é didático e reduzido; não representa uma
-pesquisa de campo.
-
-## Citações e elementos numerados
-
-O mesmo comando gera citações autor-data com links para uma bibliografia
-CSL-YAML/JSON e referências cruzadas para figuras, gráficos, tabelas e equações.
-No Markdown, use `bibliografia: referencias/artigo.yaml`, identificadores como
-`#fig:motor-bomba` em blocos `.figura` e chamadas `@fig:motor-bomba` no texto.
-Título, fonte e nota são informados nos próprios blocos Markdown; os números
-acompanham a ordem dos elementos a cada geração.
-
-Elementos visuais isolados têm o título centralizado; o container
-`.painel-imagens` organiza duas a quatro colunas com títulos à esquerda.
-Fórmulas seguem a apresentação matemática referenciada na NBR 14724:2024:
-destaque e número entre parênteses à direita, sem legenda gráfica automática.
-Quebras matemáticas com `\\` e alinhamentos com `&` são organizados pelo filtro.
-
-Veja a sintaxe completa, as normas consultadas e os limites da implementação
-em [Critérios editoriais](docs/criterios-editoriais.md). O exemplo de artigo
-inclui uma ilustração motor-bomba, painel de componentes, gráfico e tabela com
-dados simulados e fórmulas numeradas. As fontes e os critérios estão registrados
-no conteúdo. O layout institucional aprovado
-permanece na classe `senaiarticle`.
-
-## Testes e integração contínua
+Metadados inválidos, IDs duplicados, destinos internos inexistentes, arquivos
+ausentes e citações sem cadastro interrompem a geração com mensagens que
+identificam o problema. Os exemplos do kit evitam dados pessoais fictícios.
 
 ```bash
 python -m unittest discover --start-directory tests --verbose
 ```
 
-O workflow `compilar-documentos.yml` executa os testes, valida todas as fontes,
-gera TEX/PDF e verifica a exportação DOCX dos exemplos anteriores. As saídas
-são disponibilizadas no artefato `documentos-gerados` em cada pull request
-para `main` e alteração relevante na `main` ou na feature
-`feat/primeiro-mvp-documentos`.
+O CI executa a suíte, valida todas as fontes e gera TEX/PDF; verifica também a
+exportação DOCX dos exemplos pedagógicos. O artefato `documentos-gerados`
+contém as saídas de cada execução. A suíte cobre campos obrigatórios e
+opcionais, links, numeração, legendas, citações, tabelas, matemática, painéis e
+o artigo de regressão.
+
+O documento em `templates/Relatorio/Modelo Relatorio.doc` é uma referência para
+um futuro template de relatório. Ele não é anunciado como um modelo gerável
+nesta consolidação. O catálogo completo e seus limites estão na
+[matriz de cobertura](docs/matriz-cobertura.md).
 
 ## Créditos e licença
 
@@ -266,4 +205,4 @@ consultado, os componentes estudados e os limites desta adaptação.
 
 O conteúdo próprio deste repositório é disponibilizado sob a dedicação ao
 domínio público [CC0 1.0 Universal](LICENSE), sem afetar direitos de terceiros,
-marcas ou materiais incorporados futuramente sob outras licenças.
+marcas ou materiais incorporados sob outras licenças.

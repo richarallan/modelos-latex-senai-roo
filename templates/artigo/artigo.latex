@@ -6,7 +6,7 @@
 \usepackage{amsmath,amssymb}
 \usepackage{unicode-math}
 \usepackage[bidi=default]{babel}
-\babelprovide[main,import]{brazilian}
+\babelprovide[main,import]{$if(babel-lang)$$babel-lang$$else$brazilian$endif$}
 \usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -92,7 +92,7 @@ $endif$
 \hypersetup{
   pdftitle={$if(title-meta)$$title-meta$$else$$title$$endif$},
   pdfauthor={$if(author-meta)$$author-meta$$endif$},
-  pdflang={pt-BR},
+  pdflang={$if(lang)$$lang$$else$pt-BR$endif$},
 $if(palavras_chave)$
   pdfkeywords={$for(palavras_chave)$$palavras_chave$$sep$, $endfor$},
 $endif$
@@ -117,6 +117,7 @@ $include-before$
 $endfor$
 $if(pre-textuais)$
 \hypersetup{pageanchor=false}
+$if(mostrar-capa)$
 % Capa: hierarquia e alinhamentos do modelo institucional.
 \begin{titlepage}
 \centering
@@ -156,6 +157,8 @@ $endif$
 % Respiro inferior constante, mesmo sem cidade ou data.
 \vspace*{1.8cm}
 \end{titlepage}
+$endif$
+$if(mostrar-folha-rosto)$
 % Folha de rosto: natureza do trabalho no bloco direito.
 \begin{titlepage}
 \centering
@@ -178,8 +181,10 @@ $endif$
 \begin{minipage}{0.5\textwidth}
 \setlength{\parindent}{0pt}
 Artigo científico apresentado no curso de $curso$, como exigência para obtenção do título de Técnico em $habilitacao$.
+$if(orientador)$
 \par\vspace{0.6cm}
-\textbf{Orientador(a):} $if(orientador)$$orientador$$else$\hrulefill$endif$
+\textbf{Orientador(a):} $orientador$
+$endif$
 \end{minipage}
 \end{flushright}
 \vfill
@@ -190,7 +195,9 @@ $if(date)$
 {\bfseries $date$\par}
 $endif$
 \end{titlepage}
-% Aprovação: campos vazios, sem atribuir resultados ou aprovações.
+$endif$
+$if(mostrar-aprovacao)$
+% Aprovação: apenas dados fornecidos, sem campos ou avaliadores inventados.
 \begin{titlepage}
 \centering
 \senaimarca
@@ -205,21 +212,21 @@ $endfor$
 \vspace{0.6cm}
 {\bfseries\MakeUppercase{$title$}\par}
 \vspace{0.6cm}
-\begin{flushleft}
-\textbf{Resultado final:}\quad \(\square\) Apto\qquad \(\square\) Não apto
-\end{flushleft}
 \begin{singlespace}
+$if(coordenacao)$
 \senaiassinatura{Coordenação pedagógica: $coordenacao$}
+$endif$
+$if(banca)$
 \vspace{0.4cm}
 BANCA EXAMINADORA\par
+$endif$
+$if(orientador)$
 \senaiassinatura{Orientador(a): $orientador$}
+$endif$
 $if(banca)$
 $for(banca)$
 \senaiassinatura{$banca$}
 $endfor$
-$else$
-\senaiassinatura{Membro da banca}
-\senaiassinatura{Membro da banca}
 $endif$
 \end{singlespace}
 \vfill
@@ -231,6 +238,7 @@ $data-aprovacao$\par
 $endif$
 $endif$
 \end{titlepage}
+$endif$
 \hypersetup{pageanchor=true}
 $endif$
 % Corpo do artigo: paginação independente dos elementos pré-textuais.

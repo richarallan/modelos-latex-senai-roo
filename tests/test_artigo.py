@@ -131,14 +131,17 @@ class ModeloArtigoTestes(unittest.TestCase):
 
     @unittest.skipUnless(shutil.which("pandoc"), "Pandoc necessário para integração")
     def test_tex_preserva_tres_autores_na_ordem_em_todas_as_paginas(self) -> None:
-        documento = self.documento(autor=["Zélia & Silva", "Ana_Costa", "Érico Souza"])
+        documento = self.documento(
+            autor=["Equipe Z & W", "Equipe_A", "Equipe de revisão"],
+            coordenacao="Coordenação de elaboração",
+        )
         tex = self.gerar_tex(documento)
         regioes = re.findall(
             r"\\begin\{titlepage\}(.*?)\\end\{titlepage\}", tex, re.DOTALL
         )
         regioes.append(tex.split(r"\pagenumbering{arabic}", 1)[1])
         self.assertEqual(len(regioes), 4, "Capa, rosto, aprovação e corpo do artigo")
-        autores_tex = [r"Zélia \& Silva", r"Ana\_Costa", "Érico Souza"]
+        autores_tex = [r"Equipe Z \& W", r"Equipe\_A", "Equipe de revisão"]
         for indice, regiao in enumerate(regioes):
             with self.subTest(regiao=indice):
                 posicoes = [regiao.index(autor) for autor in autores_tex]
@@ -150,7 +153,7 @@ class ModeloArtigoTestes(unittest.TestCase):
     def test_capa_preserva_marca_titulo_e_autores_sem_identificacao_repetida(self) -> None:
         documento = self.documento(
             titulo="Título institucional de demonstração",
-            autor=["Zélia Silva", "Ana Costa", "Érico Souza"],
+            autor=["Equipe de elaboração", "Equipe de revisão", "Equipe técnica"],
             instituicao="Identificação institucional repetida",
             unidade_operacional="Identificação da unidade repetida",
         )
@@ -186,20 +189,23 @@ class ModeloArtigoTestes(unittest.TestCase):
                     paginas = re.findall(
                         r"\\begin\{titlepage\}(.*?)\\end\{titlepage\}", tex, re.DOTALL
                     )
-                    self.assertEqual(len(paginas), 3)
+                    self.assertEqual(len(paginas), 2)
                     for pagina in paginas[:2]:
                         pagina = re.sub(r"\s+", " ", pagina)
                         self.assertNotIn(metadados["unidade_operacional"], pagina)
                         self.assertEqual("Cidade informada no Markdown" in pagina, local is not None)
                         self.assertEqual("2041" in pagina, data is not None)
-                    self.assertNotIn("2041", paginas[2], "Data de publicação não é aprovação")
+                    self.assertNotIn("TERMO DE APROVAÇÃO", tex)
 
     @unittest.skipUnless(shutil.which("pandoc"), "Pandoc necessário para integração")
     def test_aprovacao_nao_inventa_cidade_data_ou_campos_de_data(self) -> None:
         for local in (None, "Cidade informada no Markdown"):
             for data_aprovacao in (None, "15 de dezembro de 2041"):
                 with self.subTest(local=local, data_aprovacao=data_aprovacao):
-                    documento = self.documento(unidade_operacional="Unidade não é cidade")
+                    documento = self.documento(
+                        unidade_operacional="Unidade não é cidade",
+                        coordenacao="Coordenação de elaboração",
+                    )
                     metadados = dict(documento.metadados)
                     metadados.pop("data", None)
                     if local is not None:
@@ -267,7 +273,7 @@ class ModeloArtigoTestes(unittest.TestCase):
     def test_tex_real_usa_classe_existente_e_escapa_metadados(self) -> None:
         documento = self.documento(
             titulo="Torque & rotação: medição a 50% no eixo_A",
-            autor="João & Maria",
+            autor="Equipe A & B",
             resumo="Análise de medição & inspeção com erro de 5%.",
             palavras_chave=["metrologia", "eixo_A"],
             email="autor@example.com",
@@ -296,7 +302,7 @@ class ModeloArtigoTestes(unittest.TestCase):
             self.assertIn(r"Torque \& rotação", compacto)
             self.assertIn(r"50\%", compacto)
             self.assertIn(r"eixo\_A", compacto)
-            self.assertIn(r"João \& Maria", compacto)
+            self.assertIn(r"Equipe A \& B", compacto)
             self.assertIn(r"medição \& inspeção", compacto)
             self.assertIn(r"\begin{senaiobjetivo}", tex)
             self.assertIn(r"\begin{longtable}", tex)
@@ -306,13 +312,14 @@ class ModeloArtigoTestes(unittest.TestCase):
         all(shutil.which(ferramenta) for ferramenta in ("pandoc", "xelatex", "pdftotext")),
         "Pandoc, XeLaTeX e pdftotext necessários para integração PDF",
     )
-    def test_pdf_real_preserva_texto_e_tres_paginas_pre_textuais_opcionais(self) -> None:
+    def test_pdf_real_preserva_texto_e_tres_paginas_pre_textuais_preenchidas(self) -> None:
         documento = self.documento(
             titulo="Torque & rotação: medição a 50% no eixo_A",
-            autor="João & Maria",
+            autor="Equipe A & B",
+            coordenacao="Coordenação de elaboração",
             resumo="Análise de medição & inspeção com erro de 5%.",
             palavras_chave=["metrologia", "eixo_A"],
-            email="joao_silva+artigo@example.com",
+            email="equipe+artigo@example.com",
         )
         textos: dict[bool, str] = {}
         paginas: dict[bool, int] = {}
@@ -356,9 +363,9 @@ class ModeloArtigoTestes(unittest.TestCase):
                 self.assertIn("registro antigo", texto)
                 self.assertIn("torque & rotação", texto)
                 self.assertIn("50% no eixo_a", texto)
-                self.assertIn("joão & maria", texto)
+                self.assertIn("equipe a & b", texto)
                 self.assertIn("medição & inspeção com erro de 5%", texto)
-                self.assertIn("joao_silva+artigo@example.com", texto)
+                self.assertIn("equipe+artigo@example.com", texto)
                 self.assertNotIn("sumário", texto)
             self.assertIn("termo de aprovação", textos[True])
             self.assertNotIn("termo de aprovação", textos[False])
