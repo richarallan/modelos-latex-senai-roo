@@ -112,34 +112,40 @@ $if(pre-textuais)$
 \begin{titlepage}
 \centering
 \senaimarca
-$if(instituicao)$
-{\small $instituicao$\par}
-$endif$
-$if(unidade-operacional)$
-{\small $unidade-operacional$\par}
-$endif$
-\vspace{0.8cm}
+\vspace{1.3cm}
 {\bfseries TRABALHO DE CONCLUSÃO DE CURSO\par}
-\vspace{0.6cm}
+\vspace{0.85cm}
 {\bfseries ARTIGO CIENTÍFICO\par}
-\vspace{0.6cm}
+\vspace{0.85cm}
 {\bfseries\MakeUppercase{$curso$}\par}
-\vspace{1cm}
+\vspace{1.05cm}
+% Mantém título e subtítulo juntos, inclusive quando ocupam várias linhas.
+\begin{minipage}{0.94\textwidth}
+\centering
 {\bfseries\MakeUppercase{$title$}\par}
 $if(subtitle)$
 \vspace{0.3cm}
 {$subtitle$\par}
 $endif$
-\vspace{1.2cm}
-\begin{flushright}
+\end{minipage}\par
+\vspace{2.4cm}
+% A autoria forma um bloco único, alinhado à direita como no modelo original.
+\begin{minipage}{\textwidth}
+\raggedleft
 \bfseries
 $for(author)$
 $author$\par
 $endfor$
-\end{flushright}
+\end{minipage}\par
 \vfill
+$if(local)$
 {\bfseries\MakeUppercase{$local$}\par}
+$endif$
+$if(date)$
 {\bfseries $date$\par}
+$endif$
+% Respiro inferior constante, mesmo sem cidade ou data.
+\vspace*{1.8cm}
 \end{titlepage}
 % Folha de rosto: natureza do trabalho no bloco direito.
 \begin{titlepage}
@@ -167,8 +173,12 @@ Artigo científico apresentado no curso de $curso$, como exigência para obtenç
 \end{minipage}
 \end{flushright}
 \vfill
+$if(local)$
 {\bfseries\MakeUppercase{$local$}\par}
+$endif$
+$if(date)$
 {\bfseries $date$\par}
+$endif$
 \end{titlepage}
 % Aprovação: campos vazios, sem atribuir resultados ou aprovações.
 \begin{titlepage}
@@ -203,7 +213,13 @@ $else$
 $endif$
 \end{singlespace}
 \vfill
-$local$, $if(data-aprovacao)$$data-aprovacao$$else$\rule{0.7cm}{0.4pt} de \rule{2.5cm}{0.4pt} de \rule{1cm}{0.4pt}$endif$
+$if(local)$
+$local$$if(data-aprovacao)$, $data-aprovacao$$endif$\par
+$else$
+$if(data-aprovacao)$
+$data-aprovacao$\par
+$endif$
+$endif$
 \end{titlepage}
 \hypersetup{pageanchor=true}
 $endif$

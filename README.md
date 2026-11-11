@@ -205,9 +205,12 @@ opcionais `orientador`, `coordenacao`, `banca` (lista de nomes),
 avaliadores, resultado e data de aprovação não são inventados: os campos não
 informados ficam sem preenchimento.
 
-Na ausência de `curso` ou `habilitacao`, usa-se `unidade_curricular`; na ausência
-de `local`, usa-se `unidade_operacional`. O ano/data exibido vem de `data`,
-quando fornecido. Resumo e palavras-chave são opcionais no esquema, mas devem
+Na ausência de `curso` ou `habilitacao`, usa-se `unidade_curricular`. Cidade e
+data são exibidas somente quando `local` e `data` forem informados no Markdown,
+cada um de forma independente. A cidade não é inferida de `unidade_operacional`;
+a aprovação usa apenas `data_aprovacao`, quando fornecida. A capa mantém o logo
+institucional sem repetir a instituição e a unidade abaixo dele.
+Resumo e palavras-chave são opcionais no esquema, mas devem
 ser preenchidos em um artigo completo. A referência recomenda um resumo de
 100 a 250 palavras; o renderizador não acrescenta texto para atingir esse
 limite nem o número de páginas indicado no documento original.

@@ -147,6 +147,79 @@ class ModeloArtigoTestes(unittest.TestCase):
                 self.assertNotIn("['", regiao)
 
     @unittest.skipUnless(shutil.which("pandoc"), "Pandoc necessário para integração")
+    def test_capa_preserva_marca_titulo_e_autores_sem_identificacao_repetida(self) -> None:
+        documento = self.documento(
+            titulo="Título institucional de demonstração",
+            autor=["Zélia Silva", "Ana Costa", "Érico Souza"],
+            instituicao="Identificação institucional repetida",
+            unidade_operacional="Identificação da unidade repetida",
+        )
+        tex = self.gerar_tex(documento)
+        capa = re.findall(
+            r"\\begin\{titlepage\}(.*?)\\end\{titlepage\}", tex, re.DOTALL
+        )[0]
+        capa = re.sub(r"\s+", " ", capa)
+        self.assertIn(r"\senaimarca", capa)
+        self.assertIn("TRABALHO DE CONCLUSÃO DE CURSO", capa)
+        self.assertIn("ARTIGO CIENTÍFICO", capa)
+        self.assertEqual(capa.count(documento.metadados["titulo"]), 1)
+        self.assertNotIn(documento.metadados["instituicao"], capa)
+        self.assertNotIn(documento.metadados["unidade_operacional"], capa)
+        posicoes = [capa.index(autor) for autor in documento.metadados["autor"]]
+        self.assertEqual(posicoes, sorted(posicoes))
+
+    @unittest.skipUnless(shutil.which("pandoc"), "Pandoc necessário para integração")
+    def test_cidade_e_data_aparecem_nos_pre_textuais_apenas_quando_informadas(self) -> None:
+        for local in (None, "Cidade informada no Markdown"):
+            for data in (None, "2041"):
+                with self.subTest(local=local, data=data):
+                    documento = self.documento(unidade_operacional="Unidade não é cidade")
+                    metadados = dict(documento.metadados)
+                    metadados.pop("data", None)
+                    if local is not None:
+                        metadados["local"] = local
+                    if data is not None:
+                        metadados["data"] = data
+                    tex = self.gerar_tex(
+                        renderizar.Documento(documento.caminho, metadados, documento.corpo)
+                    )
+                    paginas = re.findall(
+                        r"\\begin\{titlepage\}(.*?)\\end\{titlepage\}", tex, re.DOTALL
+                    )
+                    self.assertEqual(len(paginas), 3)
+                    for pagina in paginas[:2]:
+                        pagina = re.sub(r"\s+", " ", pagina)
+                        self.assertNotIn(metadados["unidade_operacional"], pagina)
+                        self.assertEqual("Cidade informada no Markdown" in pagina, local is not None)
+                        self.assertEqual("2041" in pagina, data is not None)
+                    self.assertNotIn("2041", paginas[2], "Data de publicação não é aprovação")
+
+    @unittest.skipUnless(shutil.which("pandoc"), "Pandoc necessário para integração")
+    def test_aprovacao_nao_inventa_cidade_data_ou_campos_de_data(self) -> None:
+        for local in (None, "Cidade informada no Markdown"):
+            for data_aprovacao in (None, "15 de dezembro de 2041"):
+                with self.subTest(local=local, data_aprovacao=data_aprovacao):
+                    documento = self.documento(unidade_operacional="Unidade não é cidade")
+                    metadados = dict(documento.metadados)
+                    metadados.pop("data", None)
+                    if local is not None:
+                        metadados["local"] = local
+                    if data_aprovacao is not None:
+                        metadados["data_aprovacao"] = data_aprovacao
+                    tex = self.gerar_tex(
+                        renderizar.Documento(documento.caminho, metadados, documento.corpo)
+                    )
+                    aprovacao = re.findall(
+                        r"\\begin\{titlepage\}(.*?)\\end\{titlepage\}", tex, re.DOTALL
+                    )[2]
+                    aprovacao = re.sub(r"\s+", " ", aprovacao)
+                    self.assertNotIn(metadados["unidade_operacional"], aprovacao)
+                    self.assertEqual("Cidade informada no Markdown" in aprovacao, local is not None)
+                    self.assertEqual("15 de dezembro de 2041" in aprovacao, data_aprovacao is not None)
+                    self.assertNotRegex(aprovacao, r"de\s+\\rule")
+                    self.assertNotRegex(aprovacao, r"(?m)^\s*,\s*$")
+
+    @unittest.skipUnless(shutil.which("pandoc"), "Pandoc necessário para integração")
     def test_tex_exibe_palavras_chave_apenas_quando_preenchidas(self) -> None:
         preenchidas = ["manutenção mecânica", "medição & análise", "eixo_A"]
         for resumo in (None, "Resumo do artigo de demonstração."):

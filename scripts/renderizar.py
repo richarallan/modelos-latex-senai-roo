@@ -200,7 +200,7 @@ def metadados_pandoc(documento: Documento) -> list[str]:
             {
                 "curso": metadados.get("curso", metadados["unidade_curricular"]),
                 "habilitacao": metadados.get("habilitacao", metadados["unidade_curricular"]),
-                "local": metadados.get("local", metadados["unidade_operacional"]),
+                "local": metadados.get("local", ""),
                 "data-aprovacao": metadados.get("data_aprovacao", ""),
             }
         )
