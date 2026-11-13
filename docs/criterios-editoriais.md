@@ -257,6 +257,19 @@ não é suficiente para essa decisão. As versões verificadas para esse caminho
 incluem 2.17.1.1, 3.1.3 e 3.1.11.1. O workflow registra as versões das ferramentas
 nos logs de instalação para facilitar a reprodução de falhas.
 
+A verificação também usa o TeX Live 2023 do Ubuntu 24.04, com os pacotes
+`pandoc` e `pandoc-data` da mesma distribuição e suas fontes recomendadas.
+O idioma informado em um elemento permanece na representação semântica;
+na apresentação, a marca `lang` redundante é omitida quando coincide com
+o idioma principal. Isso evita a reimportação do Babel e a redefinição de
+comandos de data nos templates padrão do Pandoc 3.1.3. Idiomas diferentes
+continuam sendo encaminhados ao writer. A protrusão óptica fica desativada
+somente no bloco de equação para manter a tinta do número dentro da margem
+também com as fontes de fallback.
+
+O workflow publica uma anotação por teste com falha, preservando o diagnóstico
+na página de verificações quando o acesso aos logs completos não está disponível.
+
 Os testes inserem e reorganizam objetos dos quatro tipos, verificam as chamadas
 e os destinos, exercitam citações narrativas/parentéticas e compilam um PDF sem
 interrogações de referências não resolvidas. Uma pergunta legítima em outro

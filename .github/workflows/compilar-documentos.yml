@@ -70,7 +70,21 @@ jobs:
           xelatex --version
 
       - name: Executar testes
-        run: python -m unittest discover --start-directory tests --verbose
+        run: |
+          python - <<'PY'
+          import sys
+          import unittest
+
+          resultado = unittest.TextTestRunner(verbosity=2).run(
+              unittest.defaultTestLoader.discover("tests")
+          )
+          # As anotações preservam o diagnóstico mesmo sem acesso aos logs.
+          for teste, detalhe in resultado.failures + resultado.errors:
+              mensagem = detalhe.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+              titulo = str(teste).replace("%", "%25").replace(",", "%2C").replace(":", "%3A")
+              print(f"::error title={titulo}::{mensagem}", flush=True)
+          sys.exit(0 if resultado.wasSuccessful() else 1)
+          PY
 
       - name: Validar documentos
         run: python scripts/renderizar.py --validar-apenas

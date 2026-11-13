@@ -252,6 +252,23 @@ class NucleoDocumentalTestes(unittest.TestCase):
                 self.assertIn(r"\babelprovide[main,import]{" + babel + "}", tex)
                 self.assertIn("pdflang={" + idioma + "}", tex)
 
+    def test_idioma_do_elemento_nao_reimporta_o_idioma_principal(self) -> None:
+        for idioma, babel in (("pt-BR", "brazilian"), ("en", "english"), ("es", "spanish")):
+            for modelo in ("artigo", "nota_aula", "atividade_avaliativa"):
+                with self.subTest(idioma=idioma, modelo=modelo):
+                    corpo = self.figura("idioma").replace('idioma="pt-BR"', f'idioma="{idioma}"')
+                    entrada = self.escrever(corpo, modelo=modelo, idioma=idioma, pre_textuais=False)
+                    resultado = self.executar(entrada)
+                    self.assertEqual(resultado.returncode, 0, resultado.stdout + resultado.stderr)
+                    tex = (self.pasta / "saida" / "entrada.tex").read_text(encoding="utf-8")
+                    importados = re.findall(r"\\babelprovide(?:\[[^\]]*\])?\{([^}]+)\}", tex)
+                    self.assertEqual(importados.count(babel), 1, tex)
+                    ir = self.interpretar(corpo, modelo=modelo, idioma=idioma)
+                    self.assertIn(["idioma", idioma], next(
+                        no["c"][0][2] for no in nos_ast(ir["blocks"])
+                        if no["t"] == "Div" and no["c"][0][0] == "fig:idioma"
+                    ))
+
     def test_opcionais_vazios_sao_omitidos_ao_carregar_sem_ocultar_obrigatorios(self) -> None:
         entrada = self.escrever("Conteúdo.\n", resumo="  ", subtitulo="", local=None,
                                 palavras_chave=[], orientador="\t", banca=[])

@@ -169,6 +169,10 @@ local function renderizar(div)
     if manter_junto then
       local largura = imagem and largura_da_imagem(elemento) or "\\linewidth"
       saida:insert(pandoc.RawBlock("latex", "\\begin{center}\n\\begin{minipage}{" .. largura .. "}\n\\setlength{\\parindent}{0pt}"))
+      if objeto.tipo == "equacao" then
+        -- Mantém a tinta do número dentro da margem, inclusive no XeTeX 2023.
+        saida:insert(pandoc.RawBlock("latex", "\\microtypesetup{protrusion=false}"))
+      end
     else
       saida:insert(pandoc.RawBlock("latex", "\\begingroup\n\\setlength{\\parindent}{0pt}"))
     end
@@ -313,6 +317,24 @@ end
 
 function M.apresentar(doc, opcoes)
   opcoes = opcoes or {objetos = true, pedagogicos = true}
+  -- O writer 3.1.3 inclui lang também em babel-otherlangs. Reimportar o
+  -- idioma principal redefine comandos de data no Babel do TeX Live 2023.
+  -- A IR preserva idioma; só a apresentação elimina essa marca redundante.
+  local principal = pandoc.utils.stringify(doc.meta.lang or doc.meta.idioma or "pt-BR"):lower()
+  local function idioma_local(elemento)
+    if elemento.attributes and elemento.attributes.lang
+      and elemento.attributes.lang:lower() == principal then
+      elemento.attributes.lang = nil
+      return elemento
+    end
+  end
+  local idiomas = {
+    Div = idioma_local, Span = idioma_local, Header = idioma_local,
+    Image = idioma_local, Link = idioma_local, Table = idioma_local,
+    Code = idioma_local, CodeBlock = idioma_local,
+  }
+  if PANDOC_VERSION[1] >= 3 then idiomas.Figure = idioma_local end
+  doc = doc:walk(idiomas)
   if FORMAT:match("latex") then
     doc.meta["senai-csl-legado"] = pandoc.MetaBool(bibliografia_em_paragrafos())
   end

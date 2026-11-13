@@ -163,8 +163,9 @@ artigo, referências e matemática permanecem como cobertura de regressão.
 | Citação inválida interrompe o lote antes da primeira saída | `test_citacao_invalida_no_lote_impede_saida_parcial_do_primeiro_documento` |
 | Link bibliográfico exige obra efetivamente citada e emitida | `test_link_para_referencia_exige_destino_efetivamente_emitido` |
 | Caminho de imagem não pode ser um diretório | `test_arquivo_que_aponta_para_diretorio_e_rejeitado` |
+| Idioma de elemento igual ao principal não duplica a importação Babel nos três perfis | `test_idioma_do_elemento_nao_reimporta_o_idioma_principal` |
 
-A consolidação acrescentou 20 testes aos 44 casos anteriores: 64 testes no
+A consolidação acrescentou 21 testes aos 44 casos anteriores: 65 testes no
 total, executados também com o Pandoc 3.1.3 do CI. O contrato interno e as
 responsabilidades de cada camada estão em [Arquitetura](arquitetura.md).
 
