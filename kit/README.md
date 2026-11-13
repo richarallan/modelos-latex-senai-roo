@@ -7,6 +7,7 @@ inventados.
 | Modelo | Markdown inicial | Demonstração gerável | PDF |
 |---|---|---|---|
 | Artigo institucional | [modelos/artigo.md](modelos/artigo.md) | [artigo-demonstracao.md](../exemplos/nucleo/artigo-demonstracao.md) | [Abrir](../exemplos/nucleo/artigo-demonstracao.pdf) |
+| Relatório institucional | [modelos/relatorio.md](modelos/relatorio.md) | [relatorio-completo.md](../exemplos/relatorio/relatorio-completo.md) | [Abrir](../exemplos/relatorio/relatorio-completo.pdf) |
 | Nota de aula | [modelos/nota-aula.md](modelos/nota-aula.md) | [nota-aula-demonstracao.md](../exemplos/nucleo/nota-aula-demonstracao.md) | [Abrir](../exemplos/nucleo/nota-aula-demonstracao.pdf) |
 | Atividade avaliativa | [modelos/atividade-avaliativa.md](modelos/atividade-avaliativa.md) | [atividade-demonstracao.md](../exemplos/nucleo/atividade-demonstracao.md) | [Abrir](../exemplos/nucleo/atividade-demonstracao.pdf) |
 
@@ -32,8 +33,8 @@ editada; o `.tex` é gerado novamente a cada execução.
 # Verifique a entrada sem gerar arquivos.
 python scripts/renderizar.py exemplos/nucleo/completo.md --validar-apenas
 
-# Gere as três demonstrações em um único comando.
-python scripts/renderizar.py exemplos/nucleo/artigo-demonstracao.md exemplos/nucleo/nota-aula-demonstracao.md exemplos/nucleo/atividade-demonstracao.md
+# Gere as quatro demonstrações em um único comando.
+python scripts/renderizar.py exemplos/nucleo/artigo-demonstracao.md exemplos/relatorio/relatorio-completo.md exemplos/nucleo/nota-aula-demonstracao.md exemplos/nucleo/atividade-demonstracao.md
 
 # Escolha a pasta de saída.
 python scripts/renderizar.py exemplos/nucleo/minimo.md --saida dist/revisao
@@ -41,7 +42,7 @@ python scripts/renderizar.py exemplos/nucleo/minimo.md --saida dist/revisao
 
 O comando sem entradas processa `documentos/` e `exemplos/`. `--formato tex,pdf`
 é o padrão. `--formato docx` continua disponível para nota de aula e atividade;
-o Word do artigo permanece reservado para uma próxima etapa.
+o Word do artigo e do relatório permanece reservado para uma próxima etapa.
 
 ## Preencha o cabeçalho
 
@@ -53,7 +54,7 @@ ordem apresentada no documento.
 |---|---|---|
 | `versao_schema` | Sim | `1`, como número. |
 | `tipo_documento` | Sim | `nota_aula` ou `atividade_avaliativa`, conforme a finalidade. |
-| `modelo` | Não | `artigo`, `nota_aula` ou `atividade_avaliativa`; sem o campo, o perfil segue o tipo documental. |
+| `modelo` | Não | `artigo`, `relatorio`, `nota_aula` ou `atividade_avaliativa`; sem o campo, o perfil segue o tipo documental. |
 | `titulo` | Sim | Título do documento, com pelo menos três caracteres. |
 | `autor` | Sim | Texto de autoria ou lista YAML de autorias reais, na ordem desejada. É possível usar uma equipe ou instituição responsável. |
 | `instituicao` | Sim | Instituição responsável pelo documento. |
@@ -65,12 +66,12 @@ ordem apresentada no documento.
 | `idioma` | Não | `pt-BR` (padrão), `en` ou `es`; seleciona o idioma de composição, sem traduzir o conteúdo. |
 | `bibliografia` | Não | Caminho relativo ao Markdown para CSL-YAML/JSON, ou lista de caminhos. |
 | `resumo`, `palavras_chave` | Não | Resumo em texto; palavras-chave como lista YAML. Lista vazia não gera rótulo. |
-| `pre_textuais` | Não | No artigo, `true` inclui os pré-textuais que tenham conteúdo; `false` começa pelo corpo. |
-| `capa`, `folha_rosto` | Não | Booleanos; permitem desativar individualmente essas páginas do artigo. |
+| `pre_textuais` | Não | No artigo e no relatório, `true` inclui os pré-textuais que tenham conteúdo; `false` começa pelo corpo. |
+| `capa`, `folha_rosto` | Não | Booleanos; permitem desativar individualmente essas páginas do artigo ou relatório. |
 | `aprovacao` | Não | `false` desativa a aprovação; `true` só a inclui quando há coordenação, banca ou data de aprovação fornecidas. |
 | `sumario` | Não | Booleano que altera o padrão do perfil; sem títulos de seção, o sumário é omitido. |
-| `capa`, `folha_rosto`, `aprovacao` | Não | No artigo, controlam cada pré-textual com `true`/`false`. A aprovação continua exigindo dados efetivos, mesmo com `aprovacao: true`. |
-| `sumario` | Não | `true`/`false` substitui a preferência do perfil; sem títulos de seção, não é criado um sumário vazio. |
+| `tipo_trabalho` | Não | No relatório, identificação no bloco superior da capa; o padrão é `RELATÓRIO TÉCNICO`. Informe a modalidade real, como `TRABALHO DE CONCLUSÃO DE CURSO`, quando aplicável. |
+| `natureza` | Não | No relatório, descrição fornecida para a folha de rosto. Sem o campo, o template usa apenas a apresentação ao curso informado, sem declarar grau ou resultado. |
 | `curso`, `habilitacao` | Não | Dados acadêmicos fornecidos para a folha de rosto. |
 | `local`, `data_aprovacao` | Não | Cidade e data de aprovação somente quando conhecidas e fornecidas. Não há inferência de cidade a partir da unidade. |
 | `orientador`, `coordenacao`, `banca`, `email` | Não | Dados reais de orientação, coordenação, banca (lista) e contato. Omita os desconhecidos. |
@@ -80,6 +81,11 @@ erros de entrada. Campos opcionais sem conteúdo são omitidos: não preencha co
 traços, nomes inventados ou frases que simulem assinaturas. A aprovação só é
 composta quando há dados de aprovação; a presença de um orientador, sozinha,
 não cria uma página de aprovação.
+
+Para o relatório, o [guia específico](../docs/relatorio.md) explica a capa,
+as seções e os exemplos [mínimo](../exemplos/relatorio/relatorio-minimo.md) e
+[com título longo](../exemplos/relatorio/relatorio-titulo-longo.md). O sumário
+vem ativado no perfil; use `sumario: false` quando ele não for necessário.
 
 ## Escreva o corpo
 

@@ -118,13 +118,14 @@ def _apresentacao(documento: Documento, formato: str, tem_titulos: bool) -> list
         comando.extend(f"--variable={chave}:{valor.as_posix()}" for chave, valor in perfil.recursos.items())
     if perfil.pre_textuais and documento.metadados.get("pre_textuais", True):
         comando.append("--variable=pre-textuais:true")
-        for campo in ("capa", "folha_rosto"):
-            if documento.metadados.get(campo, True):
-                comando.append(f"--variable=mostrar-{campo.replace('_', '-')}:true")
-        if documento.metadados.get("aprovacao", True) and any(
-            documento.metadados.get(campo) for campo in ("coordenacao", "banca", "data_aprovacao")
-        ):
-            comando.append("--variable=mostrar-aprovacao:true")
+        for pagina in perfil.paginas_pre_textuais:
+            if not documento.metadados.get(pagina, True):
+                continue
+            if pagina == "aprovacao" and not any(
+                documento.metadados.get(campo) for campo in ("coordenacao", "banca", "data_aprovacao")
+            ):
+                continue
+            comando.append(f"--variable=mostrar-{pagina.replace('_', '-')}:true")
     if formato in {"tex", "pdf"}:
         comando.append(f"--variable=documentclass:{perfil.classe}")
         comando.extend(f"--variable=classoption:{opcao}" for opcao in perfil.opcoes_classe)

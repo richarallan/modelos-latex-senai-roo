@@ -20,7 +20,7 @@ LaTeX → XeLaTeX → PDF
 
 TEX e PDF de um mesmo documento partem da mesma representação. O DOCX
 preservado dos perfis pedagógicos usa essa mesma interpretação, com o
-apresentador correspondente ao formato. A saída Word do artigo permanece
+apresentador correspondente ao formato. A saída Word do artigo e do relatório permanece
 reservada para uma etapa posterior.
 
 ## 1. Defina a diferença que pertence ao perfil
@@ -43,13 +43,29 @@ seguinte forma; adapte os valores aos recursos realmente implementados:
   "opcoes_classe": [],
   "formatos": ["tex", "pdf"],
   "sumario": false,
-  "pre_textuais": false
+  "pre_textuais": false,
+  "paginas_pre_textuais": []
 }
 ```
 
 `template: null` seleciona o template padrão do Pandoc, como nos perfis
 pedagógicos legados. `id` é o valor de `modelo` no YAML. Os caminhos são
 relativos à raiz do repositório, não ao diretório do documento.
+
+`paginas_pre_textuais` declara quais páginas o perfil admite: `capa`,
+`folha_rosto` e `aprovacao`. Quando `pre_textuais` for `true`, essa lista é
+obrigatória e deve conter pelo menos uma página. Artigo e relatório declaram
+as três; um perfil pode oferecer somente capa e folha de rosto, por exemplo.
+Com `pre_textuais: false`, a lista pode ficar vazia ou ser omitida.
+Os controles do Markdown e a exigência de dados de aprovação continuam sendo
+aplicados. O gerador não precisa conhecer o nome do novo modelo para ativar
+as páginas admitidas.
+
+O [relatório](relatorio.md) é um exemplo implementado dessa extensão:
+`perfis/relatorio.json` seleciona `templates/Relatorio/relatorio.latex`, que
+reutiliza o preâmbulo comum do artigo em `templates/comum/preambulo.latex`.
+A capa e as quebras de seções pertencem à apresentação; objetos, referências,
+numeração e citações continuam no núcleo comum.
 
 ## 2. Acrescente o perfil ao contrato
 
@@ -124,8 +140,9 @@ dados reais fornecidos pela pessoa responsável. Não use dados pessoais
 fictícios nem publicações bibliográficas inventadas.
 
 Atualize o guia rápido com o campo `modelo` e informe qualquer limitação real
-de formato. O arquivo `.doc` de referência de relatório existente no projeto
-não se torna um modelo gerável apenas por ser mencionado na documentação.
+de formato. Preserve o documento de referência visual, como ocorre com
+`templates/Relatorio/Modelo Relatorio.doc`, e documente quais regras vieram
+dele e quais são opções do novo perfil.
 
 ## 6. Teste o contrato e a apresentação
 

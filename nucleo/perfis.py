@@ -20,6 +20,7 @@ class Perfil:
     sumario: bool
     pre_textuais: bool
     recursos: dict[str, Path]
+    paginas_pre_textuais: tuple[str, ...]
 
 
 def carregar_perfil(documento: Documento) -> Perfil:
@@ -46,7 +47,8 @@ def carregar_perfil(documento: Documento) -> Perfil:
                 raise ValueError(f"recurso {chave} inexistente ou fora do repositório: {recurso}")
         perfil = Perfil(identificador, tuple(dados["tipos_documentais"]), template,
                         dados["classe"], tuple(dados["opcoes_classe"]),
-                        tuple(dados["formatos"]), dados["sumario"], dados["pre_textuais"], recursos)
+                        tuple(dados["formatos"]), dados["sumario"], dados["pre_textuais"], recursos,
+                        tuple(dados.get("paginas_pre_textuais", [])))
     except (ValueError, KeyError, TypeError) as erro:
         raise ErroDocumento(f"{caminho}: perfil inválido: {erro}") from erro
     if documento.metadados.get("tipo_documento") not in perfil.tipos_documentais:

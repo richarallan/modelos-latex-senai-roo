@@ -114,16 +114,16 @@ class NucleoDocumentalTestes(unittest.TestCase):
                  "Leia a @fig:conjunto e [retorne à seção](#sec:procedimento).\n"
                  + self.figura("conjunto"))
         representacoes = []
-        for modelo in ("artigo", "nota_aula", "atividade_avaliativa"):
+        for modelo in ("artigo", "nota_aula", "atividade_avaliativa", "relatorio"):
             with self.subTest(modelo=modelo):
                 documento = self.documento(corpo, modelo=modelo)
                 perfil = carregar_perfil(documento)
                 self.assertEqual(perfil.id, modelo)
                 self.assertTrue({"tex", "pdf"}.issubset(set(perfil.formatos)))
                 representacoes.append(self.interpretar(corpo, modelo=modelo)["blocks"])
-        self.assertEqual(len(representacoes), 3)
-        self.assertEqual(representacoes[0], representacoes[1])
-        self.assertEqual(representacoes[1], representacoes[2])
+        self.assertEqual(len(representacoes), 4)
+        for representacao in representacoes[1:]:
+            self.assertEqual(representacoes[0], representacao)
 
     def test_ir_preserva_markdown_nativo_e_cobre_catalogo_sem_latex_gerado(self) -> None:
         corpo = (
@@ -254,7 +254,7 @@ class NucleoDocumentalTestes(unittest.TestCase):
 
     def test_idioma_do_elemento_nao_reimporta_o_idioma_principal(self) -> None:
         for idioma, babel in (("pt-BR", "brazilian"), ("en", "english"), ("es", "spanish")):
-            for modelo in ("artigo", "nota_aula", "atividade_avaliativa"):
+            for modelo in ("artigo", "nota_aula", "atividade_avaliativa", "relatorio"):
                 with self.subTest(idioma=idioma, modelo=modelo):
                     corpo = self.figura("idioma").replace('idioma="pt-BR"', f'idioma="{idioma}"')
                     entrada = self.escrever(corpo, modelo=modelo, idioma=idioma, pre_textuais=False)
@@ -377,13 +377,15 @@ class NucleoDocumentalTestes(unittest.TestCase):
         all(shutil.which(item) for item in ("xelatex", "pdftotext", "pdfinfo")),
         "XeLaTeX e Poppler necessários para integração PDF",
     )
-    def test_pdf_dos_tres_perfis_resolve_objetos_tabelas_e_citacoes(self) -> None:
+    def test_pdf_dos_perfis_resolve_objetos_tabelas_e_citacoes(self) -> None:
         corpo = (
             "# Registro {#sec:registro}\n\n"
             "Segundo @jcgm2012, conferir [@jcgm2012, p. 2].\n\n"
-            "Consultar @fig:conjunto, @tab:valores e @eq:calculo. "
+            "Consultar @fig:conjunto, @gra:dados, @tab:valores e @eq:calculo. "
             "[Retornar ao registro](#sec:registro).\n"
             + self.figura("conjunto")
+            + '\n::: {.grafico identificador="gra:dados" titulo="Leituras simuladas" '
+              'arquivo="imagem.png" fonte="Equipe de elaboração."}\n:::\n'
             + '\n::: {.tabela identificador="tab:valores" titulo="Dados simulados" '
               'fonte="Equipe de elaboração." nota="Sem coleta de campo."}\n'
               '| Item | Valor |\n|---|---:|\n| Medição | 2 |\n:::\n'
@@ -392,7 +394,7 @@ class NucleoDocumentalTestes(unittest.TestCase):
               '::: {.questao identificador="q:registro" pontos="2" tipo="registro"}\n'
               'Registre a leitura.\n:::\n'
         )
-        for modelo in ("artigo", "nota_aula", "atividade_avaliativa"):
+        for modelo in ("artigo", "nota_aula", "atividade_avaliativa", "relatorio"):
             with self.subTest(modelo=modelo):
                 entrada = self.escrever(corpo, nome=modelo, modelo=modelo,
                                         pre_textuais=False, bibliografia="referencias.yaml")
@@ -402,7 +404,7 @@ class NucleoDocumentalTestes(unittest.TestCase):
                 texto = re.sub(r"\s+", " ", subprocess.check_output(
                     ["pdftotext", "-layout", str(pdf), "-"], text=True, timeout=30,
                 ))
-                for trecho in ("Figura 1", "Tabela 1", "Equação (1)", "Dados simulados",
+                for trecho in ("Figura 1", "Gráfico 1", "Tabela 1", "Equação (1)", "Dados simulados",
                                "Fonte: Equipe de elaboração.", "Nota: Sem coleta de campo.",
                                "International vocabulary of metrology"):
                     self.assertIn(trecho, texto)
@@ -413,7 +415,7 @@ class NucleoDocumentalTestes(unittest.TestCase):
                 destinos = subprocess.check_output(
                     ["pdfinfo", "-dests", str(pdf)], text=True, timeout=30,
                 )
-                for destino in ("fig:conjunto", "tab:valores", "eq:calculo", "q:registro"):
+                for destino in ("fig:conjunto", "gra:dados", "tab:valores", "eq:calculo", "q:registro"):
                     self.assertIn(destino, destinos)
                 tex = pdf.with_suffix(".tex").read_text(encoding="utf-8")
                 self.assertIn(r"\label{sec:registro}", tex)

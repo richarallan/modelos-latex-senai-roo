@@ -1,0 +1,15 @@
+{
+  "versao": 1,
+  "id": "relatorio",
+  "tipos_documentais": ["nota_aula", "atividade_avaliativa"],
+  "template": "templates/Relatorio/relatorio.latex",
+  "classe": "senaiarticle",
+  "opcoes_classe": ["relatorio"],
+  "formatos": ["tex", "pdf"],
+  "sumario": true,
+  "pre_textuais": true,
+  "paginas_pre_textuais": ["capa", "folha_rosto", "aprovacao"],
+  "recursos": {
+    "logo-institucional": "templates/artigo/recursos/logo-senai.png"
+  }
+}

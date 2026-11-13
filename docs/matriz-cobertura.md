@@ -1,7 +1,7 @@
 # Matriz de cobertura do núcleo documental
 
 Esta matriz delimita o catálogo oferecido pelo projeto. Os perfis `artigo`,
-`nota_aula` e `atividade_avaliativa` compartilham a interpretação e a
+`relatorio`, `nota_aula` e `atividade_avaliativa` compartilham a interpretação e a
 representação semântica; o perfil escolhe os recursos de saída e a apresentação.
 Um elemento não precisa ser incluído em todo documento para que o perfil o
 suporte. Campos, blocos e páginas opcionais ausentes não são preenchidos com
@@ -9,14 +9,15 @@ dados inventados.
 
 Os exemplos copiáveis estão no [catálogo do kit](../kit/elementos.md). Os
 [modelos iniciais](../kit/modelos/) e as
-[demonstrações](../exemplos/nucleo/) fornecem documentos geráveis, com caminhos
+[demonstrações do núcleo](../exemplos/nucleo/) e
+[do relatório](../exemplos/relatorio/) fornecem documentos geráveis, com caminhos
 de recursos e metadados completos. O [artigo aprovado](../exemplos/artigo-exemplo.pdf)
 é a referência preservada de regressão visual; as demonstrações do núcleo são
 arquivos separados.
 
 ## Como ler a cobertura
 
-- **Todos**: os três perfis, em TEX e PDF. DOCX permanece disponível apenas
+- **Todos**: os quatro perfis, em TEX e PDF. DOCX permanece disponível apenas
   nos perfis pedagógicos anteriores.
 - **Nativo**: escreva Markdown comum. Não crie um bloco especial para
   parágrafos, títulos ou listas.
@@ -106,14 +107,17 @@ entre parênteses à direita e não uma legenda gráfica automática.
 | Autoria | Texto ou lista YAML | Lista não vazia; ordem preservada | Todos | Testes de autoria em texto/lista e três autores |
 | Subtítulo | `subtitulo` | Opcional; ausente/vazio não cria linha ou rótulo | Todos | Testes do artigo e do núcleo |
 | Idioma | `idioma` | Padrão `pt-BR`; valores suportados `pt-BR`, `en`, `es` | Todos | Schema e testes do núcleo |
-| Cidade e data | `local`, `data` | Independentes; nenhuma cidade ou data é inferida | Artigo | Testes condicionais de cidade e data em `test_artigo.py` |
-| Capa | Título, autoria e identificação existente | Pré-textual configurável; sem preenchimento inventado | Artigo | Regressão da marca, título, autoria e posições da capa |
-| Folha de rosto | Título, autoria, curso/habilitação e natureza do trabalho | Pré-textual configurável; orientação apenas quando fornecida | Artigo | Regressão do artigo e condições dos opcionais |
-| Aprovação | Coordenação, banca e/ou data de aprovação informadas | Página somente quando há dados efetivos; sem assinaturas genéricas vazias | Artigo | Testes de aprovação e do núcleo |
-| Orientação, coordenação e banca | `orientador`, `coordenacao`, `banca` | Opcionais; rótulos e assinaturas somente com dados | Artigo | Testes de campos opcionais |
-| Resumo | `resumo` | Opcional; sem campo não há título de resumo vazio | Artigo | Testes de campos opcionais |
-| Palavras-chave | `palavras_chave` | Opcional; lista ausente ou vazia não gera rótulo | Artigo | `test_tex_exibe_palavras_chave_apenas_quando_preenchidas` |
+| Cidade e data | `local`, `data` | Independentes; nenhuma cidade ou data é inferida | Artigo e relatório | Testes condicionais de cidade e data em `test_artigo.py` |
+| Capa | Título, autoria e identificação existente | Pré-textual configurável; sem preenchimento inventado | Artigo e relatório | Regressão da marca, título, autoria e posições da capa |
+| Folha de rosto | Título, autoria, curso/habilitação e natureza do trabalho | Pré-textual configurável; orientação apenas quando fornecida | Artigo e relatório | Regressão do artigo e condições dos opcionais |
+| Aprovação | Coordenação, banca e/ou data de aprovação informadas | Página somente quando há dados efetivos; sem assinaturas genéricas vazias | Artigo e relatório | Testes de aprovação e do núcleo |
+| Orientação, coordenação e banca | `orientador`, `coordenacao`, `banca` | Opcionais; rótulos e assinaturas somente com dados | Artigo e relatório | Testes de campos opcionais |
+| Resumo | `resumo` | Opcional; sem campo não há título de resumo vazio | Artigo e relatório | Testes de campos opcionais |
+| Palavras-chave | `palavras_chave` | Opcional; lista ausente ou vazia não gera rótulo | Artigo e relatório | `test_tex_exibe_palavras_chave_apenas_quando_preenchidas` |
 | Contato | `email` | Opcional; quando informado deve ser válido | Artigo | Schema e testes do núcleo |
+| Modalidade do trabalho | `tipo_trabalho` | Opcional; padrão `RELATÓRIO TÉCNICO` | Relatório | Schema, exemplos e testes de relatório |
+| Natureza do relatório | `natureza` | Opcional; sem o campo, apresentação simples ao curso informado | Relatório | Schema e testes de campos opcionais |
+| Seções primárias | Títulos `#` do Markdown | No relatório, iniciam nova página; títulos internos usam a mesma numeração de seções | Relatório | Testes de paginação e demonstração completa |
 
 ## Erros e critérios de aceitação
 
@@ -143,7 +147,7 @@ artigo, referências e matemática permanecem como cobertura de regressão.
 
 | Contrato coberto | Caso automatizado |
 |---|---|
-| Os três perfis recebem a mesma representação, sem reinterpretar conteúdo | `test_perfis_consumem_a_mesma_ir_sem_reinterpretar_conteudo` |
+| Os perfis recebem a mesma representação, sem reinterpretar conteúdo | `test_perfis_consumem_a_mesma_ir_sem_reinterpretar_conteudo` |
 | Markdown nativo e catálogo semântico preservados na IR, sem LaTeX gerado na interpretação | `test_ir_preserva_markdown_nativo_e_cobre_catalogo_sem_latex_gerado` |
 | Identificador chave-valor e renumeração após reorganizar elementos | `test_identificador_chave_valor_renumera_apos_reordenar` |
 | IDs duplicados e conflito entre `#id` e `identificador` | `test_identificadores_duplicados_e_conflitantes_tem_diagnostico` |
@@ -156,25 +160,44 @@ artigo, referências e matemática permanecem como cobertura de regressão.
 | Propriedades de elementos inválidas com diagnóstico específico | `test_atributos_invalidos_indicam_o_elemento` |
 | Questão com identificador chave-valor e pontuação inteira/decimal, rejeitando valores inválidos | `test_questao_aceita_pontos_inteiros_decimais_e_rejeita_valores_invalidos` |
 | Blocos pedagógicos sem conteúdo não geram rótulos vazios | `test_blocos_pedagogicos_vazios_nao_geram_rotulos` |
-| PDFs dos três perfis com objetos, tabelas e citações resolvidos | `test_pdf_dos_tres_perfis_resolve_objetos_tabelas_e_citacoes` |
+| PDFs dos quatro perfis com figuras, gráficos, tabelas e citações resolvidos | `test_pdf_dos_perfis_resolve_objetos_tabelas_e_citacoes` |
 | Artigo sem opcionais não cria aprovação ou rótulos vazios | `test_pdf_artigo_sem_opcionais_nao_cria_aprovacao_nem_rotulos_vazios` |
 | Preservação do artigo aprovado como referência | `test_pdf_artigo_aprovado_permanece_como_referencia_de_regressao` |
 | Listas vazias não ocultam tipos inválidos nos opcionais | `test_listas_vazias_nao_ocultam_tipos_invalidos_de_metadados` |
 | Citação inválida interrompe o lote antes da primeira saída | `test_citacao_invalida_no_lote_impede_saida_parcial_do_primeiro_documento` |
 | Link bibliográfico exige obra efetivamente citada e emitida | `test_link_para_referencia_exige_destino_efetivamente_emitido` |
 | Caminho de imagem não pode ser um diretório | `test_arquivo_que_aponta_para_diretorio_e_rejeitado` |
-| Idioma de elemento igual ao principal não duplica a importação Babel nos três perfis | `test_idioma_do_elemento_nao_reimporta_o_idioma_principal` |
+| Idioma de elemento igual ao principal não duplica a importação Babel nos perfis | `test_idioma_do_elemento_nao_reimporta_o_idioma_principal` |
 
-A consolidação acrescentou 21 testes aos 44 casos anteriores: 65 testes no
-total, executados também com o Pandoc 3.1.3 do CI. O contrato interno e as
-responsabilidades de cada camada estão em [Arquitetura](arquitetura.md).
+## Rastreabilidade dos testes do relatório
+
+Os casos específicos estão em
+[`tests/test_relatorio.py`](../tests/test_relatorio.py).
+
+| Contrato coberto | Caso automatizado |
+|---|---|
+| Perfil, nove obrigatórios, tipos documentais e formatos permitidos | `test_perfil_relatorio_preserva_obrigatorios_tipos_e_formatos` |
+| Tipos válidos e omissão dos campos próprios vazios | `test_campos_do_relatorio_validam_tipos_e_omitem_vazios` |
+| Capacidades declaradas no perfil controlam as páginas disponíveis | `test_capacidades_do_perfil_controlam_as_paginas_pre_textuais` |
+| Pré-textuais usam somente dados fornecidos | `test_pre_textuais_usam_apenas_os_campos_fornecidos` |
+| IR e renumeração de figuras, gráficos, tabelas e equações compartilhadas | `test_ir_e_renumeracao_dos_quatro_tipos_sao_compartilhadas` |
+| IDs repetidos, destinos inexistentes e arquivos ausentes rejeitados | `test_validacao_do_relatorio_rejeita_ids_destinos_e_arquivos_invalidos` |
+| Capa com hierarquia e posições institucionais, título longo e três autores | `test_pdf_capa_preserva_hierarquia_posicoes_e_tres_autores` |
+| Seções primárias em nova página e sumário com destinos | `test_pdf_capitulos_abrem_nova_pagina_e_sumario_tem_destinos` |
+| Opcionais ausentes sem páginas ou rótulos vazios | `test_pdf_opcionais_ausentes_nao_criam_paginas_ou_rotulos_vazios` |
+
+A suíte reúne 74 casos: 44 de regressão anterior, 21 da consolidação do núcleo
+e nove específicos do relatório. Os testes comuns exercitam agora os quatro
+perfis, sem duplicar suas implementações. A execução completa deve passar
+também com o Pandoc 3.1.3 do CI. O contrato interno e as responsabilidades de
+cada camada estão em [Arquitetura](arquitetura.md).
 
 ## Limites explícitos
 
-Esta consolidação não apresenta um novo modelo institucional de relatório:
-`templates/Relatorio/Modelo Relatorio.doc` continua como referência para uma
-etapa posterior. Glossário, listas automáticas de siglas/símbolos e regras
-específicas de anexos/apêndices não integram este catálogo. É possível escrever
+O [relatório institucional](relatorio.md) é um perfil gerável com seu template
+e o documento Word original preservado como referência visual. Glossário,
+listas automáticas de siglas/símbolos e regras específicas de anexos/apêndices
+não integram este catálogo. É possível escrever
 seções correspondentes em Markdown comum, sem prometer semântica ou automação
 que não foi implementada.
 

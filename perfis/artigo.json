@@ -16,6 +16,7 @@
   ],
   "sumario": false,
   "pre_textuais": true,
+  "paginas_pre_textuais": ["capa", "folha_rosto", "aprovacao"],
   "recursos": {
     "logo-artigo": "templates/artigo/recursos/logo-senai.png"
   }

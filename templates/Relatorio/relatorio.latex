@@ -1,0 +1,143 @@
+$../comum/preambulo()$
+
+% O relatório consome o mesmo corpo semântico e os mesmos recursos acadêmicos.
+\usetikzlibrary{calc}
+\newcommand{\senairelatoriologo}{%
+$if(logo-institucional)$
+  \includegraphics[width=\paperwidth]{$logo-institucional$}%
+$else$
+$if(logo-artigo)$
+  \includegraphics[width=\paperwidth]{$logo-artigo$}%
+$endif$
+$endif$
+}
+% O texto centraliza no miolo (x=11 cm); o logo, na página (x=10,5 cm).
+\renewcommand{\senaimarca}{%
+  \noindent\makebox[\textwidth][c]{\hspace*{-1cm}\senairelatoriologo}\par}
+
+\begin{document}
+\pagestyle{empty}
+$for(include-before)$
+$include-before$
+$endfor$
+$if(pre-textuais)$
+\hypersetup{pageanchor=false}
+$if(mostrar-capa)$
+% Âncoras da capa medidas no Modelo Relatorio.doc, em coordenadas da página.
+\begin{titlepage}
+\null
+\begin{tikzpicture}[remember picture,overlay]
+\node[anchor=north west,inner sep=0pt,outer sep=0pt]
+  at ([yshift=-3.254cm]current page.north west) {\senairelatoriologo};
+\node[anchor=north,inner sep=0pt,outer sep=0pt,text width=\textwidth,align=center]
+  at ([xshift=11cm,yshift=-9.10cm]current page.north west)
+  {\bfseries $if(tipo_trabalho)$\MakeUppercase{$tipo_trabalho$}$else$RELATÓRIO TÉCNICO$endif$};
+\node[anchor=north,inner sep=0pt,outer sep=0pt,text width=\textwidth,align=center]
+  at ([xshift=11cm,yshift=-11.29cm]current page.north west)
+  {\bfseries\MakeUppercase{$curso$}};
+\node[anchor=north,inner sep=0pt,outer sep=0pt,text width=\textwidth,align=center]
+  (relatorio-titulo) at ([xshift=11cm,yshift=-14.22cm]current page.north west)
+  {\bfseries\MakeUppercase{$title$}\par
+$if(subtitle)$
+   \vspace{0.3cm}{\normalfont $subtitle$\par}
+$endif$
+  };
+\coordinate (relatorio-autores-base) at ([xshift=19cm,yshift=-17.87cm]current page.north west);
+% Títulos maiores preservam o bloco de autoria e afastam-no quando necessário.
+\path let \p1=(relatorio-titulo.south),\p2=(relatorio-autores-base) in
+  node[anchor=north east,inner sep=0pt,outer sep=0pt,text width=\textwidth,align=right]
+  at (\x2,{min(\y2,\y1-0.8cm)}) {\bfseries\setlength{\baselineskip}{20.7pt}
+$for(author)$
+    $author$\par
+$endfor$
+  };
+$if(local)$
+\node[anchor=north,inner sep=0pt,outer sep=0pt,text width=\textwidth,align=center]
+  at ([xshift=11cm,yshift=-25.17cm]current page.north west)
+  {\bfseries\MakeUppercase{$local$}};
+$endif$
+$if(date)$
+\node[anchor=north,inner sep=0pt,outer sep=0pt,text width=\textwidth,align=center]
+  at ([xshift=11cm,yshift=-25.90cm]current page.north west)
+  {\bfseries $date$};
+$endif$
+\end{tikzpicture}
+\end{titlepage}
+$endif$
+$if(mostrar-folha-rosto)$
+\begin{titlepage}
+\centering
+\senaimarca
+\vspace{0.4cm}
+{\bfseries
+$for(author)$
+$author$\par
+$endfor$
+}
+\vspace{2.5cm}
+{\bfseries\MakeUppercase{$title$}\par}
+$if(subtitle)$
+\vspace{0.3cm}
+{$subtitle$\par}
+$endif$
+\vspace{1.5cm}
+\begin{flushright}
+\begin{minipage}{0.5\textwidth}
+\setlength{\parindent}{0pt}
+$if(natureza)$
+$natureza$
+$else$
+Relatório apresentado ao curso de $curso$.
+$endif$
+$if(orientador)$
+\par\vspace{0.6cm}
+\textbf{Orientador(a):} $orientador$
+$endif$
+\end{minipage}
+\end{flushright}
+\vfill
+$if(local)$
+{\bfseries\MakeUppercase{$local$}\par}
+$endif$
+$if(date)$
+{\bfseries $date$\par}
+$endif$
+\end{titlepage}
+$endif$
+$../comum/aprovacao()$
+
+\hypersetup{pageanchor=true}
+$endif$
+% Resumo, palavras-chave e sumário só produzem páginas com conteúdo.
+\hypersetup{pageanchor=false}
+$../comum/resumo()$
+
+$if(resumo)$
+\clearpage
+$else$
+$if(palavras_chave)$
+\clearpage
+$endif$
+$endif$
+$if(toc)$
+\tableofcontents
+\clearpage
+$endif$
+\hypersetup{pageanchor=true}
+\pagenumbering{arabic}
+\pagestyle{senaiartigo}
+% Sem capa/rosto, a identificação compacta acompanha a primeira seção.
+$if(mostrar-capa)$
+$else$
+$if(mostrar-folha-rosto)$
+$else$
+$../comum/identificacao()$
+
+$endif$
+$endif$
+\senaiiniciarconteudo
+$body$
+$for(include-after)$
+$include-after$
+$endfor$
+\end{document}

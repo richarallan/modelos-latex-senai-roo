@@ -32,15 +32,28 @@
       "type": "string",
       "enum": [
         "artigo",
+        "relatorio",
         "nota_aula",
         "atividade_avaliativa"
       ],
-      "description": "Perfil documental. Quando ausente, usa o tipo_documento como perfil; artigo continua disponível para os dois tipos existentes."
+      "description": "Perfil documental. Quando ausente, usa o tipo_documento como perfil; artigo e relatório estão disponíveis para os dois tipos existentes."
     },
     "pre_textuais": {
       "type": "boolean",
       "default": true,
       "description": "Habilita os pré-textuais previstos no perfil. Elementos sem dados continuam omitidos."
+    },
+    "tipo_trabalho": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Identificação superior da capa do relatório; padrão RELATÓRIO TÉCNICO. Informe TRABALHO DE CONCLUSÃO DE CURSO apenas quando aplicável."
+    },
+    "natureza": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Finalidade do relatório, informada na folha de rosto, sem atribuir grau ou aprovação automaticamente."
     },
     "resumo": {
       "type": "string",

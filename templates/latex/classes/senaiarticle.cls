@@ -1,8 +1,11 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{senaiarticle}[2026/11/11 v0.2 Documentos e artigo institucional]
+\ProvidesClass{senaiarticle}[2026/11/13 v0.3 Documentos, artigo e relatório institucional]
 
 \newif\ifsenai@artigo
+\newif\ifsenai@relatorio
+\newif\ifsenai@primeirasecao
 \DeclareOption{artigo}{\senai@artigotrue}
+\DeclareOption{relatorio}{\senai@relatoriotrue\senai@artigotrue}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
 \ifsenai@artigo
@@ -12,7 +15,7 @@
 \fi
 
 % O modo padrão preserva os documentos pedagógicos do primeiro MVP.
-% A opção artigo aplica o perfil acadêmico da referência institucional.
+% Artigo e relatório compartilham o corpo acadêmico da referência institucional.
 \RequirePackage{fontspec}
 \defaultfontfeatures{Ligatures=TeX}
 \IfFontExistsTF{TeX Gyre Heros}{
@@ -122,6 +125,19 @@
   \hypersetup{hidelinks,colorlinks=false}
   \widowpenalty=10000
   \clubpenalty=10000
+\fi
+
+\ifsenai@relatorio
+  % O relatório reutiliza o corpo acadêmico; somente as seções primárias
+  % seguintes iniciam nova página. O template reinicia a flag após o sumário.
+  \newcommand{\senaiiniciarconteudo}{\global\senai@primeirasecaotrue}
+  \senaiiniciarconteudo
+  \newcommand{\sectionbreak}{%
+    \ifsenai@primeirasecao
+      \global\senai@primeirasecaofalse
+    \else
+      \clearpage
+    \fi}
 \fi
 
 \AtBeginDocument{\raggedbottom}

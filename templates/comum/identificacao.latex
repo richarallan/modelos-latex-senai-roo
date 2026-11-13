@@ -1,0 +1,15 @@
+\begin{center}
+{\bfseries\MakeUppercase{$title$}\par}
+$if(subtitle)$
+\vspace{0.3cm}
+{$subtitle$\par}
+$endif$
+\end{center}
+\begin{flushright}
+$for(author)$
+$author$$if(email)$\footnote{Contato: \href{mailto:$email$}{\nolinkurl{$email$}}.}$endif$\par
+$endfor$
+$if(orientador)$
+Orientador(a): $orientador$\par
+$endif$
+\end{flushright}

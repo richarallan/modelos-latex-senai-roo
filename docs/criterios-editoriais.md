@@ -68,6 +68,29 @@ O CSL é comunitário e tem licença própria, preservada no repositório.
   No núcleo consolidado, campos sem conteúdo não geram rótulos, linhas de
   assinatura ou páginas vazias; a aprovação exige dados efetivos.
 
+## Relatório institucional
+
+O perfil `relatorio` usa como referência visual
+`templates/Relatorio/Modelo Relatorio.doc`. A capa preserva a sequência e o
+alinhamento dos blocos: logo alto centralizado na página, identificação do
+trabalho, curso e título centralizados no miolo, autoria à direita e cidade/data
+no rodapé. A marca reutiliza o mesmo arquivo de imagem do artigo; não há uma
+reconstrução tipográfica do logotipo.
+
+O corpo reutiliza a tipografia acadêmica compartilhada: A4, margens superior e
+esquerda de 3 cm, inferior e direita de 2 cm, fonte de 12 pontos, entrelinha de
+1,5 e recuo de 1,25 cm. No relatório, cada seção primária inicia nova página.
+Esses critérios vêm da referência institucional. As edições antigas das normas
+impressas no documento Word não substituem o referencial e o alcance da consulta
+registrados nesta documentação.
+
+`tipo_trabalho` permite informar a modalidade real no bloco superior da capa;
+o padrão é `RELATÓRIO TÉCNICO`. `natureza` permite descrever o contexto na folha
+de rosto; na ausência do campo, é usada somente a apresentação ao curso
+informado. Pessoas, contatos, assinaturas e resultados não são preenchidos por
+suposição. Campos e páginas opcionais seguem as condições do núcleo. Consulte o
+[guia do relatório e as demonstrações](relatorio.md).
+
 ## Bibliografia estruturada e chamadas
 
 No cabeçalho do Markdown, informe um arquivo relativo ao próprio documento:
@@ -283,7 +306,7 @@ uma manutenção real. Essas origens também aparecem no PDF, junto aos elemento
 ## Núcleo documental e catálogo compartilhado
 
 A consolidação separa Markdown/YAML, interpretação e geração comuns, perfis
-documentais e apresentação visual. Os perfis `artigo`, `nota_aula` e
+documentais e apresentação visual. Os perfis `artigo`, `relatorio`, `nota_aula` e
 `atividade_avaliativa` consomem a mesma representação semântica Pandoc JSON;
 numeração, IDs e validação não são reimplementados por template.
 
@@ -302,7 +325,8 @@ Resumo ausente ou vazio não gera título; palavras-chave ausentes ou em lista
 vazia não geram rótulo. Cidade e data não são inferidas.
 
 O artigo original e seu PDF aprovado permanecem como referência de regressão.
-As [demonstrações do núcleo](../exemplos/nucleo/) são arquivos separados, com
-autoria coletiva e sem pessoas ou contatos inventados. A existência do `.doc`
-de relatório é apenas uma referência para uma etapa posterior, não uma
-implementação de novo modelo.
+As [demonstrações do núcleo](../exemplos/nucleo/) e
+[do relatório](../exemplos/relatorio/) são arquivos separados, com autoria
+coletiva e sem pessoas ou contatos inventados. Artigo e relatório compartilham
+o preâmbulo visual e os mecanismos de CSL, tabelas e imagens; cada perfil
+seleciona sua composição sem duplicar a interpretação dos elementos.
