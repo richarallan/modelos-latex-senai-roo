@@ -21,6 +21,7 @@ class Perfil:
     pre_textuais: bool
     recursos: dict[str, Path]
     paginas_pre_textuais: tuple[str, ...]
+    secoes_em_nova_pagina: bool = False
 
 
 def carregar_perfil(documento: Documento) -> Perfil:
@@ -48,7 +49,8 @@ def carregar_perfil(documento: Documento) -> Perfil:
         perfil = Perfil(identificador, tuple(dados["tipos_documentais"]), template,
                         dados["classe"], tuple(dados["opcoes_classe"]),
                         tuple(dados["formatos"]), dados["sumario"], dados["pre_textuais"], recursos,
-                        tuple(dados.get("paginas_pre_textuais", [])))
+                        tuple(dados.get("paginas_pre_textuais", [])),
+                        dados.get("secoes_em_nova_pagina", False))
     except (ValueError, KeyError, TypeError) as erro:
         raise ErroDocumento(f"{caminho}: perfil inválido: {erro}") from erro
     if documento.metadados.get("tipo_documento") not in perfil.tipos_documentais:

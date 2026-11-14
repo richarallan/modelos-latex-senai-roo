@@ -242,8 +242,8 @@ class ModeloRelatorioTestes(unittest.TestCase):
         paginas = self.paginas()
         self.assertEqual(len(paginas), 3)
         self.assertIn("sumário", paginas[0].casefold())
-        self.assertIn("Preparação", paginas[0])
-        self.assertIn("Resultados", paginas[0])
+        self.assertIn("PREPARAÇÃO", paginas[0])
+        self.assertIn("RESULTADOS", paginas[0])
         self.assertTrue(all(pagina.strip() for pagina in paginas))
 
     @unittest.skipUnless(PDF_DISPONIVEL, "XeLaTeX e Poppler necessários para validar os opcionais")

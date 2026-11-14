@@ -14,6 +14,7 @@ Essa interpretação não afirma a inexistência de outra norma com o número ci
 | ABNT NBR 6022:2018 | Artigo técnico/científico; o modelo institucional aprovado continua determinando as margens, a tipografia e os pré-textuais. |
 | ABNT NBR 10520:2023 | Sistema autor-data, chamadas narrativas/parentéticas e localizadores de citações. |
 | ABNT NBR 6023:2025 | Organização dos dados bibliográficos e das referências. |
+| ABNT NBR 6027:2012 | Referencial para a organização e apresentação do sumário; os critérios concretos e as escolhas visuais são registrados abaixo. |
 | ABNT NBR 14724:2024 | Referência subsidiária de apresentação de ilustrações, títulos, fontes e equações; não é uma migração para ABNTeX. |
 | IBGE, *Normas de apresentação tabular*, 3. ed., 1993 | Apresentação de dados numéricos em tabelas, com título, fonte/notas e linhas laterais abertas. |
 
@@ -26,6 +27,8 @@ Foram consultadas implementações acadêmicas abertas e seus comentários:
 - [Implementação acadêmica para UNIVALI, versão fixada](https://github.com/fockingf/template-latex-univali/blob/ce0a677426f796c91bbe2e03202e57faf2c64308/README.md), que declara as edições 2024/2025/2023 e os critérios de títulos/fontes. Trata-se de uma implementação secundária, não de publicação normativa oficial da universidade.
 - [Implementação acadêmica PPgEA/UFRN](https://github.com/paoloo/PPGEA-UFRN-Template), que também documenta as edições adotadas.
 - [Origem, versão e licença do CSL usado pelo renderizador](../templates/bibliografia/FONTE.md).
+- [Manual do abnTeX2 sobre o sumário](https://github.com/abntex/abntex2/blob/0cb2fe32e3ca5dbcbb08098497603777837f5098/doc/latex/abntex2/abntex2.tex#L1966-L1991), que declara seguir as recomendações da NBR 6027:2012.
+- [Implementação do sumário na mesma versão do abnTeX2](https://github.com/abntex/abntex2/blob/0cb2fe32e3ca5dbcbb08098497603777837f5098/tex/latex/abntex2/abntex2.cls#L438-L527), com indicativos sem recuo hierárquico, coluna comum para títulos, pontilhado nos capítulos e tratamento de caixa alta.
 
 Os textos integrais no catálogo ABNT e as páginas originais do IBGE não ficaram
 acessíveis neste ambiente (bloqueio de rede). Assim, esta documentação registra
@@ -90,6 +93,43 @@ de rosto; na ausência do campo, é usada somente a apresentação ao curso
 informado. Pessoas, contatos, assinaturas e resultados não são preenchidos por
 suposição. Campos e páginas opcionais seguem as condições do núcleo. Consulte o
 [guia do relatório e as demonstrações](relatorio.md).
+
+## Sumário e critérios de alinhamento
+
+A revisão do sumário usa a NBR 6027:2012 como referencial, com apoio das fontes
+secundárias fixadas acima. Esta revisão não consultou o texto integral da
+norma; a página universitária consultada foi bloqueada pela rede do ambiente.
+Assim, os detalhes visuais
+seguintes registram a implementação adotada e a solicitação do usuário, sem
+atribuir toda decisão estética a uma obrigação textual da norma.
+
+- Os indicativos numéricos dos níveis exibidos começam na mesma margem
+  esquerda, sem recuo adicional para subseções ou subsubseções.
+- Os títulos começam em uma coluna comum, após o indicativo mais extenso.
+  As linhas de continuação e as entradas sem número, como referências,
+  apêndices e anexos, alinham-se pela coluna do título. A largura necessária
+  é medida na composição e persistida no auxiliar do XeLaTeX para a passagem
+  seguinte; não depende de espaços ou números escritos manualmente no Markdown.
+- Todos os níveis e as entradas sem número usam pontilhado até a coluna da
+  paginação, alinhada à direita. O pontilhado uniforme foi uma escolha visual
+  solicitada para o projeto e também aparece no modelo consultado do abnTeX2.
+- Os títulos principais aparecem em caixa alta no sumário, acompanhando a
+  apresentação do corpo. Subtítulos preservam a grafia do Markdown, inclusive
+  siglas e nomes próprios. Não há conversão indiscriminada para minúsculas nem
+  reescrita dos títulos ou identificadores do conteúdo.
+
+Essas regras ficam no estilo compartilhado
+`templates/latex/classes/senaisumario.sty`, consumido pelos perfis existentes.
+A numeração e os destinos continuam automáticos. A revisão verifica a página
+de chegada do link, além do número impresso: no relatório, a quebra visual
+precede o título de seção para que sua âncora fique na página correta.
+O citeproc é aplicado antes da apresentação, permitindo o mesmo tratamento
+para o título das referências gerado automaticamente.
+
+Os testes específicos estão em `tests/test_sumario.py`: alinhamento e
+pontilhado nos quatro perfis, títulos longos com indicativos extensos e links
+depois da reorganização de seções. A conferência deve incluir o Pandoc 3.1.3 e
+o TeX Live 2023 do CI, além da versão local.
 
 ## Bibliografia estruturada e chamadas
 

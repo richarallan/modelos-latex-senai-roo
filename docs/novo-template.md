@@ -13,6 +13,8 @@ núcleo: leitura, contrato, interpretação e validação
        ↓
 representação semântica Pandoc JSON
        ↓
+citeproc: citações e bibliografia
+       ↓
 apresentador compartilhado + perfil + template visual
        ↓
 LaTeX → XeLaTeX → PDF
@@ -43,6 +45,7 @@ seguinte forma; adapte os valores aos recursos realmente implementados:
   "opcoes_classe": [],
   "formatos": ["tex", "pdf"],
   "sumario": false,
+  "secoes_em_nova_pagina": false,
   "pre_textuais": false,
   "paginas_pre_textuais": []
 }
@@ -61,11 +64,22 @@ Os controles do Markdown e a exigência de dados de aprovação continuam sendo
 aplicados. O gerador não precisa conhecer o nome do novo modelo para ativar
 as páginas admitidas.
 
+`secoes_em_nova_pagina` é uma capacidade opcional do perfil, com padrão
+`false`. Ative-a quando as seções primárias precisarem começar em nova página,
+como no relatório. Para TEX/PDF, o apresentador insere a quebra antes do segundo
+Header de nível 1 em diante, preservando o primeiro título junto à identificação
+compacta quando não houver capa. A quebra vem antes da âncora criada pelo
+writer, mantendo corretos os destinos dos links e do sumário.
+
 O [relatório](relatorio.md) é um exemplo implementado dessa extensão:
 `perfis/relatorio.json` seleciona `templates/Relatorio/relatorio.latex`, que
 reutiliza o preâmbulo comum do artigo em `templates/comum/preambulo.latex`.
 A capa e as quebras de seções pertencem à apresentação; objetos, referências,
 numeração e citações continuam no núcleo comum.
+
+O citeproc é executado antes da apresentação. Os títulos de bibliografia que
+ele gerar participam das mesmas regras visuais, sem exigir um tratamento de
+referências diferente no novo template.
 
 ## 2. Acrescente o perfil ao contrato
 
@@ -89,6 +103,16 @@ interpretação de blocos no arquivo de perfil.
 Crie o template visual indicado pelo perfil. Ele recebe os mesmos metadados e
 o mesmo corpo semântico que os modelos existentes. Reutilize a classe, os
 ambientes e os fragmentos compartilhados quando forem adequados.
+
+A classe compartilhada carrega `templates/latex/classes/senaisumario.sty`.
+Reutilize esse estilo para os indicativos sem recuo hierárquico, a coluna comum
+de títulos e continuações, os pontilhados e a paginação à direita. A largura
+comum é medida pelo maior indicativo e conservada no auxiliar do XeLaTeX;
+gere o PDF pelo comando normal para permitir as passagens necessárias.
+Os títulos principais aparecem em caixa alta no sumário; subtítulos preservam
+a grafia do conteúdo, incluindo siglas. Consulte os
+[critérios editoriais](criterios-editoriais.md) para distinguir o referencial
+normativo das escolhas de apresentação do projeto.
 
 No template Pandoc, use condições ao redor de cada elemento opcional:
 
@@ -155,6 +179,8 @@ Valide pelo menos:
 - duplicidade de IDs, links sem destino e arquivos ausentes;
 - inserção e reorganização de figuras, gráficos, tabelas e equações;
 - títulos, fontes, notas, citações e destinos internos no PDF;
+- sumário com alinhamento comum, pontilhado em todos os níveis, títulos longos
+  sem sobreposição e links que apontem para a página do próprio título;
 - matemática com várias linhas, tabelas e painéis;
 - idiomas suportados e metadados inválidos;
 - geração com a versão do Pandoc usada no CI.

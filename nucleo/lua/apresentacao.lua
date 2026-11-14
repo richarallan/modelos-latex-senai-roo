@@ -340,6 +340,17 @@ function M.apresentar(doc, opcoes)
   end
   if opcoes.objetos then doc = doc:walk({Div = renderizar}) end
   if opcoes.pedagogicos then doc = doc:walk({Div = renderizar_pedagogico}) end
+  if FORMAT:match("latex") and doc.meta["senai-secoes-em-nova-pagina"] then
+    -- A quebra precisa preceder o Header, pois o writer insere o hypertarget
+    -- antes de \section. Uma quebra na classe chegaria depois dessa âncora.
+    local primeira = true
+    local corpo = pandoc.Pandoc(doc.blocks):walk({Header = function(titulo)
+      if titulo.level ~= 1 then return nil end
+      if primeira then primeira = false; return nil end
+      return {pandoc.RawBlock("latex", "\\clearpage"), titulo}
+    end})
+    doc.blocks = corpo.blocks
+  end
   return doc
 end
 return M

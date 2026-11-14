@@ -93,8 +93,25 @@ das linhas sem modificar a estrutura.
 O corpo utiliza A4, margens superior/esquerda de 3 cm e inferior/direita de
 2 cm, 12 pontos, fonte Times New Roman quando disponível e alternativas livres
 compatíveis, entrelinha de 1,5, texto justificado e recuo inicial de 1,25 cm.
-Seções primárias começam em nova página. As regras visuais acadêmicas existentes
-são reutilizadas pela opção de classe `relatorio`.
+Seções primárias começam em nova página. Essa capacidade é declarada por
+`secoes_em_nova_pagina: true` no perfil, e a apresentação insere a quebra antes
+do título e de sua âncora. A primeira seção acompanha o início do corpo; as
+seguintes abrem nova página, incluindo as referências geradas pelo citeproc.
+As regras visuais acadêmicas existentes são reutilizadas pela opção de classe
+`relatorio`.
+
+O sumário usa indicativos de todos os níveis na mesma margem esquerda, sem
+recuo hierárquico. Títulos, suas continuações e entradas sem número começam
+em uma coluna comum, dimensionada pelo indicativo mais extenso. O pontilhado
+acompanha todas as entradas até a paginação à direita. Títulos principais
+aparecem em caixa alta; os subtítulos mantêm a grafia do Markdown, preservando
+siglas e nomes próprios. O [referencial e as escolhas adotadas](criterios-editoriais.md#sumário-e-critérios-de-alinhamento)
+distinguem a NBR 6027:2012 das decisões visuais solicitadas para o projeto.
+
+A formatação fica em `senaisumario.sty`, compartilhado com os outros perfis.
+Não é necessário alinhar entradas por espaços, digitar pontilhados ou atualizar
+números de página no conteúdo. As capas e o texto original dos títulos permanecem
+preservados; a transformação de caixa alta é exclusiva da entrada do sumário.
 
 As marcações vermelhas do Word são instruções e placeholders, não cores
 institucionais do conteúdo final. O DOC também contém nomes fixos, campos de
@@ -131,6 +148,9 @@ Não inclua páginas opcionais sem conteúdo.
 Os testes de relatório complementam a regressão existente do artigo e do núcleo.
 Eles verificam o contrato, obrigatórios e opcionais, composição da capa,
 paginação, objetos, legendas, fontes/notas, citações, tabelas e destinos internos.
+Os três casos de `tests/test_sumario.py` acrescentam conferência das coordenadas
+das colunas, pontilhado em todos os níveis, títulos longos e destinos de links
+após reordenar seções.
 A compatibilidade deve ser executada com Pandoc e pandoc-data 3.1.3 do Ubuntu
 24.04, TeX Live 2023 e fontes recomendadas, além da versão local do Pandoc.
 

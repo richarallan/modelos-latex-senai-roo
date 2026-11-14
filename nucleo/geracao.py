@@ -107,7 +107,7 @@ def _apresentacao(documento: Documento, formato: str, tem_titulos: bool) -> list
     perfil = carregar_perfil(documento)
     if formato not in perfil.formatos:
         raise ErroDocumento(f"modelo {perfil.id}: a saída Word/DOCX ficará para uma próxima etapa; use --formato tex,pdf")
-    comando = ["--standalone", "--number-sections", "--fail-if-warnings", "--citeproc",
+    comando = ["--standalone", "--number-sections", "--fail-if-warnings",
                "--metadata=link-citations:true", "--metadata=reference-section-title:Referências",
                f"--resource-path={_recursos(documento)}", *_bibliografias(documento)]
     if documento.metadados.get("sumario", perfil.sumario) and tem_titulos:
@@ -127,6 +127,8 @@ def _apresentacao(documento: Documento, formato: str, tem_titulos: bool) -> list
                 continue
             comando.append(f"--variable=mostrar-{pagina.replace('_', '-')}:true")
     if formato in {"tex", "pdf"}:
+        if perfil.secoes_em_nova_pagina:
+            comando.append("--metadata=senai-secoes-em-nova-pagina:true")
         comando.append(f"--variable=documentclass:{perfil.classe}")
         comando.extend(f"--variable=classoption:{opcao}" for opcao in perfil.opcoes_classe)
         comando.append("--to=latex" if formato == "tex" else "--to=pdf")
@@ -141,7 +143,7 @@ def comando_pandoc(pandoc: str, documento: Documento, formato: str, destino: Pat
     """Fachada compatível para consumidores anteriores; usa os filtros comuns."""
     documento = normalizar_documento(documento)
     return [pandoc, str(documento.caminho), "--from=markdown+fenced_divs+fenced_code_attributes",
-            f"--lua-filter={FILTRO_SEMANTICO}", f"--lua-filter={FILTRO_APRESENTACAO}",
+            f"--lua-filter={FILTRO_SEMANTICO}", "--citeproc", f"--lua-filter={FILTRO_APRESENTACAO}",
             f"--metadata=senai-diretorio-fonte:{documento.caminho.resolve().parent}",
             *metadados_pandoc(documento),
             *_apresentacao(documento, formato, bool(re.search(r"^#{1,6}\s", documento.corpo, re.M))),
@@ -169,7 +171,7 @@ def _tem_titulos(valor: object) -> bool:
 
 
 def _gerar_ir(pandoc: str, documento: Documento, ir: dict, formato: str, destino: Path) -> None:
-    _executar([pandoc, "--from=json", f"--lua-filter={FILTRO_APRESENTACAO}",
+    _executar([pandoc, "--from=json", "--citeproc", f"--lua-filter={FILTRO_APRESENTACAO}",
                *_apresentacao(documento, formato, _tem_titulos(ir["blocks"])),
                f"--output={destino}"], documento, json.dumps(ir, ensure_ascii=False))
 

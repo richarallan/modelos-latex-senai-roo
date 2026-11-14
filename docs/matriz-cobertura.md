@@ -186,8 +186,26 @@ Os casos específicos estão em
 | Seções primárias em nova página e sumário com destinos | `test_pdf_capitulos_abrem_nova_pagina_e_sumario_tem_destinos` |
 | Opcionais ausentes sem páginas ou rótulos vazios | `test_pdf_opcionais_ausentes_nao_criam_paginas_ou_rotulos_vazios` |
 
-A suíte reúne 74 casos: 44 de regressão anterior, 21 da consolidação do núcleo
-e nove específicos do relatório. Os testes comuns exercitam agora os quatro
+## Rastreabilidade do sumário
+
+Os casos específicos estão em
+[`tests/test_sumario.py`](../tests/test_sumario.py). A apresentação é
+compartilhada em `templates/latex/classes/senaisumario.sty`; títulos e listas
+continuam sendo conteúdo Markdown comum.
+
+| Contrato coberto | Caso automatizado |
+|---|---|
+| Indicativos sem recuo hierárquico, títulos em coluna comum, pontilhado em todos os níveis e capitalização preservada nos subtítulos dos quatro perfis | `test_pdf_sumario_alinha_niveis_pontilha_e_preserva_capitalizacao` |
+| Indicativo extenso e título de várias linhas, sem sobrepor colunas ou desalojar a paginação à direita | `test_pdf_sumario_indicativo_extenso_e_titulo_longo_nao_sobrepoem_colunas` |
+| Links do sumário e chamadas internas chegam à página do título após inserir ou reorganizar seções | `test_pdf_links_do_sumario_chegam_a_pagina_do_titulo_apos_reordenar` |
+
+O [critério editorial](criterios-editoriais.md#sumário-e-critérios-de-alinhamento)
+registra a NBR 6027:2012 como referencial, as fontes secundárias consultadas e
+as escolhas visuais solicitadas. A conformidade não é inferida apenas da
+presença de uma lista de títulos: os testes conferem posições, números e destinos.
+
+A suíte reúne 77 casos: 44 de regressão anterior, 21 da consolidação do núcleo,
+nove específicos do relatório e três do sumário. Os testes comuns exercitam os quatro
 perfis, sem duplicar suas implementações. A execução completa deve passar
 também com o Pandoc 3.1.3 do CI. O contrato interno e as responsabilidades de
 cada camada estão em [Arquitetura](arquitetura.md).

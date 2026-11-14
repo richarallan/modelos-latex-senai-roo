@@ -9,7 +9,8 @@ flowchart LR
   M[Markdown e YAML] --> D[Leitura e contrato]
   D --> S[Interpretação semântica comum]
   S --> J[Uma AST Pandoc JSON]
-  J --> A[Apresentação compartilhada]
+  J --> C[Citeproc: citações e bibliografia]
+  C --> A[Apresentação compartilhada]
   P[Perfil declarativo] --> A
   A --> T[Template e classe visual]
   T --> L[LaTeX e XeLaTeX]
@@ -24,8 +25,8 @@ flowchart LR
 | Conteúdo | `exemplos/`, `documentos/`, `kit/modelos/` | Texto e propriedades fornecidas; nenhum preenchimento pessoal inventado |
 | Leitura e contrato | `nucleo/documento.py`, `schemas/documento.schema.json` | YAML sem campos repetidos, normalização de opcionais, metadados e bibliografias CSL |
 | Interpretação | `filtros/semantica.lua`, `nucleo/lua/semantica.lua`, `catalogo.lua` | IDs, destinos, arquivos, propriedades, enumeração e chamadas; AST sem LaTeX gerado |
-| Perfil | `perfis/*.json`, `nucleo/perfis.py`, `schemas/perfil.schema.json` | Tipos admitidos, formatos, template, classe, recursos visuais, páginas pré-textuais admitidas e padrões |
-| Apresentação | `filtros/apresentacao.lua`, `nucleo/lua/apresentacao.lua`, `templates/` | Composição dos elementos interpretados para o writer selecionado, classe e identidade visual |
+| Perfil | `perfis/*.json`, `nucleo/perfis.py`, `schemas/perfil.schema.json` | Tipos admitidos, formatos, template, classe, recursos visuais, páginas pré-textuais, abertura de seções e padrões |
+| Apresentação | `filtros/apresentacao.lua`, `nucleo/lua/apresentacao.lua`, `templates/` | Composição dos elementos interpretados para o writer selecionado, quebras visuais, classe e identidade visual |
 | Geração | `nucleo/geracao.py` | Uma interpretação por entrada; mesma AST para todos os formatos; Pandoc/citeproc/XeLaTeX |
 | Interface | `scripts/renderizar.py` | Argumentos, mensagens e fachada compatível com os consumidores anteriores |
 
@@ -37,12 +38,40 @@ visuais próprios e reutilizam `templates/comum/preambulo.latex`, incluindo a
 compatibilidade CSL, os pacotes de composição e os metadados PDF. O relatório
 acrescenta sua opção de classe e sua capa, sem criar outro interpretador.
 
+A ordem de geração é **interpretação → citeproc → apresentação → writer**.
+O citeproc resolve as citações e acrescenta a bibliografia antes da composição
+visual. Assim, a apresentação também recebe os títulos de referências gerados
+automaticamente, sem outra leitura do Markdown nem outra enumeração de objetos.
+
 Cada perfil declara em `paginas_pre_textuais` as páginas que admite. A lista
 é obrigatória e não vazia se `pre_textuais` estiver habilitado. O gerador
 produz os controles das páginas declaradas, respeitando os opcionais do
 Markdown e os dados exigidos para aprovação. Assim, oferecer outra combinação
 de capa, folha de rosto e aprovação não exige uma decisão por nome de modelo
 no núcleo de geração.
+
+A capacidade opcional `secoes_em_nova_pagina` tem padrão `false` e é ativada
+pelo perfil de relatório. Em TEX/PDF, o apresentador insere a quebra antes de
+cada título de nível 1 após o primeiro. A quebra antecede o próprio Header,
+de modo que o writer coloque a âncora e o destino do sumário na página do
+título. A regra também alcança a bibliografia acrescentada pelo citeproc.
+Essa capacidade pertence ao perfil e à apresentação, sem condicional por nome
+de modelo no interpretador e sem comandos de paginação no Markdown.
+
+## Sumário compartilhado
+
+`templates/latex/classes/senaisumario.sty` reúne a apresentação do sumário
+usada pela classe compartilhada. Os indicativos de todos os níveis começam
+na margem esquerda. Títulos e linhas de continuação usam uma coluna comum,
+cuja largura é calculada a partir do indicativo mais extenso e registrada no
+auxiliar do XeLaTeX para convergir nas passagens seguintes.
+
+Todas as entradas recebem pontilhado até a paginação alinhada à direita,
+inclusive títulos principais e elementos sem número. Os títulos principais
+aparecem em caixa alta no sumário; subtítulos preservam a grafia do Markdown,
+incluindo siglas e nomes próprios. Essa composição não altera o conteúdo nem
+os identificadores das seções. O referencial e as decisões visuais solicitadas
+estão separados nos [critérios editoriais](criterios-editoriais.md).
 
 ## Representação semântica
 
@@ -94,9 +123,14 @@ usado no Ubuntu 24.04 do CI, além da versão local.
 O perfil `relatorio` mantém os tipos documentais existentes e os nove campos
 obrigatórios comuns. Os opcionais `tipo_trabalho` e `natureza` são conteúdo:
 o template apenas os apresenta. A opção de classe `relatorio` reutiliza a
-tipografia acadêmica e abre as seções primárias em nova página. As propriedades
+tipografia acadêmica, e a capacidade de perfil `secoes_em_nova_pagina` controla
+a abertura das seções primárias na apresentação. As propriedades
 dos objetos e sua numeração permanecem na IR compartilhada. Consulte os
 [critérios próprios do relatório](relatorio.md).
+
+A regressão do sumário é coberta por `tests/test_sumario.py`, com casos para
+alinhamento e pontilhado, continuação de títulos longos e destinos de páginas.
+Esses três casos complementam os 74 anteriores, totalizando 77 testes.
 
 Consulte a [matriz](matriz-cobertura.md), o [kit](../kit/README.md) e o
 [guia de próximo template](novo-template.md). Um template novo recebe a AST
