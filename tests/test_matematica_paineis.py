@@ -138,7 +138,7 @@ class MatematicaPaineisTestes(unittest.TestCase):
         bibliografia = self.escrever_bibliografia()
         corpo = "Ver @fig:alfa, @fig:beta e @gra:gama.\n" + self.painel(
             [
-                self.imagem("alfa", "Vista Alfa", fonte="Adaptado de @silva2023.", nota="NotaAlfa."),
+                self.imagem("alfa", "Vista Alfa", fonte="Adaptado de @jcgm2012.", nota="NotaAlfa."),
                 self.imagem("beta", "Vista Beta", fonte="OrigemBeta."),
                 self.imagem("gama", "Dados Gama", classe="grafico", prefixo="gra"),
             ],
@@ -149,10 +149,10 @@ class MatematicaPaineisTestes(unittest.TestCase):
             self.verificar_chamada(tex, tipo, identificador, numero)
             self.assertRegex(tex, rf"\\(?:hypertarget|label)\{{{tipo}:{identificador}\}}")
         compacto = self.normalizar(tex)
-        self.assertIn("Fonte: Adaptado de Silva", compacto)
+        self.assertIn("Fonte: Adaptado de JCGM", compacto)
         self.assertIn("Nota: NotaAlfa.", compacto)
         self.assertIn("Fonte: OrigemBeta.", compacto)
-        self.assertRegex(tex, r"\\(?:hyperlink|citeproc)\{ref-silva2023\}")
+        self.assertRegex(tex, r"\\(?:hyperlink|citeproc)\{ref-jcgm2012\}")
 
     def test_paineis_invalidos_sao_rejeitados(self) -> None:
         imagens = [self.imagem("alfa", "Vista Alfa"), self.imagem("beta", "Vista Beta")]

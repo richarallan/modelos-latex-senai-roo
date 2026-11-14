@@ -1,0 +1,43 @@
+$if(mostrar-aprovacao)$
+% Aprovação: apenas dados fornecidos, sem campos ou avaliadores inventados.
+\begin{titlepage}
+\centering
+\senaimarca
+\vspace{0.4cm}
+{\bfseries TERMO DE APROVAÇÃO\par}
+\vspace{0.6cm}
+{\bfseries
+$for(author)$
+$author$\par
+$endfor$
+}
+\vspace{0.6cm}
+{\bfseries\MakeUppercase{$title$}\par}
+\vspace{0.6cm}
+\begin{singlespace}
+$if(coordenacao)$
+\senaiassinatura{Coordenação pedagógica: $coordenacao$}
+$endif$
+$if(banca)$
+\vspace{0.4cm}
+BANCA EXAMINADORA\par
+$endif$
+$if(orientador)$
+\senaiassinatura{Orientador(a): $orientador$}
+$endif$
+$if(banca)$
+$for(banca)$
+\senaiassinatura{$banca$}
+$endfor$
+$endif$
+\end{singlespace}
+\vfill
+$if(local)$
+$local$$if(data-aprovacao)$, $data-aprovacao$$endif$\par
+$else$
+$if(data-aprovacao)$
+$data-aprovacao$\par
+$endif$
+$endif$
+\end{titlepage}
+$endif$

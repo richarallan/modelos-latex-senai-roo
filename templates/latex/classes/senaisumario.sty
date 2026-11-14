@@ -1,0 +1,88 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{senaisumario}[2026/11/14 v0.1 Sumario institucional compartilhado]
+
+% Indicativos sem recuo hierárquico; títulos e continuações em coluna comum.
+% A maior largura é guardada no auxiliar para a próxima passagem do XeLaTeX.
+\newdimen\senai@toclargura
+\newdimen\senai@tocmaior
+\newif\ifsenai@tocvisto
+\senai@toclargura=3em\relax
+\senai@tocmaior=0pt\relax
+\newcommand{\senaitoclargura}[1]{\global\senai@toclargura=#1\relax}
+\newcommand{\senai@tocmedir}[1]{%
+  \global\senai@tocvistotrue
+  \settowidth{\@tempdimb}{\normalfont\normalsize\bfseries #1}%
+  \ifdim\@tempdimb>0pt \advance\@tempdimb by .5em\relax\fi
+  \ifdim\@tempdimb>\senai@tocmaior
+    \global\senai@tocmaior=\@tempdimb\relax
+  \fi}
+
+\newcommand{\senai@toclinha}[4]{%
+  \begingroup
+  \normalfont\normalsize\parskip=0pt\relax
+  #2%
+  \let\senai@numerooriginal\numberline
+  \protected\def\numberline##1{%
+    \senai@tocmedir{##1}\senai@numerooriginal{##1}}%
+  \@dottedtocline{#1}{0pt}{\senai@toclargura}{#3}{#4}%
+  \endgroup}
+\renewcommand{\l@section}[2]{\senai@toclinha{1}{\bfseries}{#1}{#2}}
+\renewcommand{\l@subsection}[2]{\senai@toclinha{2}{}{#1}{#2}}
+\renewcommand{\l@subsubsection}[2]{\senai@toclinha{3}{}{#1}{#2}}
+\renewcommand{\l@paragraph}[2]{\senai@toclinha{4}{}{#1}{#2}}
+\renewcommand{\l@subparagraph}[2]{\senai@toclinha{5}{}{#1}{#2}}
+
+% A transformação é exclusiva da entrada do sumário: Markdown, IDs e títulos
+% do corpo permanecem intactos. Elementos sem número ocupam a mesma coluna.
+\ExplSyntaxOn
+\cs_new_protected:Npn \senai_sumario_escrever:nnn #1#2#3
+  {
+    % titlesec pode entregar o indicativo dentro de uma macro adiada.
+    % Expande como na escrita do .toc antes de decidir se há número.
+    \protected@edef\senai@tocconteudo{#3}
+    \exp_args:Nee \str_if_in:nnTF
+      { \tl_to_str:V \senai@tocconteudo } { \tl_to_str:n {\numberline} }
+      {
+        \str_if_eq:nnTF {#2}{section}
+          { \senai@addcontentsline {#1}{#2}{\protect\MakeUppercase{\senai@tocconteudo}} }
+          { \senai@addcontentsline {#1}{#2}{\senai@tocconteudo} }
+      }
+      {
+        \str_if_eq:nnTF {#2}{section}
+          { \senai@addcontentsline {#1}{#2}{\protect\numberline{}\protect\MakeUppercase{\senai@tocconteudo}} }
+          { \senai@addcontentsline {#1}{#2}{\protect\numberline{}\senai@tocconteudo} }
+      }
+  }
+\cs_new_protected:Npn \senai_sumario_adicionar:nnn #1#2#3
+  {
+    \str_if_eq:nnTF {#1}{toc}
+      {
+        \str_case:nnF {#2}
+          {
+            {section}{\senai_sumario_escrever:nnn {#1}{#2}{#3}}
+            {subsection}{\senai_sumario_escrever:nnn {#1}{#2}{#3}}
+            {subsubsection}{\senai_sumario_escrever:nnn {#1}{#2}{#3}}
+            {paragraph}{\senai_sumario_escrever:nnn {#1}{#2}{#3}}
+            {subparagraph}{\senai_sumario_escrever:nnn {#1}{#2}{#3}}
+          }
+          { \senai@addcontentsline {#1}{#2}{#3} }
+      }
+      { \senai@addcontentsline {#1}{#2}{#3} }
+  }
+\AddToHook{begindocument/end}
+  {
+    \cs_set_eq:NN \senai@addcontentsline \addcontentsline
+    \RenewDocumentCommand \addcontentsline {m m m}
+      { \senai_sumario_adicionar:nnn {#1}{#2}{#3} }
+  }
+\ExplSyntaxOff
+
+\AtEndDocument{%
+  \ifsenai@tocvisto
+    \if@filesw
+      \immediate\write\@auxout{\string\senaitoclargura{\the\senai@tocmaior}}%
+    \fi
+    \ifdim\senai@toclargura=\senai@tocmaior\else
+      \@latex@warning@no@line{Rerun to get cross-references right}%
+    \fi
+  \fi}

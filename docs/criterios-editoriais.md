@@ -14,6 +14,7 @@ Essa interpretação não afirma a inexistência de outra norma com o número ci
 | ABNT NBR 6022:2018 | Artigo técnico/científico; o modelo institucional aprovado continua determinando as margens, a tipografia e os pré-textuais. |
 | ABNT NBR 10520:2023 | Sistema autor-data, chamadas narrativas/parentéticas e localizadores de citações. |
 | ABNT NBR 6023:2025 | Organização dos dados bibliográficos e das referências. |
+| ABNT NBR 6027:2012 | Referencial para a organização e apresentação do sumário; os critérios concretos e as escolhas visuais são registrados abaixo. |
 | ABNT NBR 14724:2024 | Referência subsidiária de apresentação de ilustrações, títulos, fontes e equações; não é uma migração para ABNTeX. |
 | IBGE, *Normas de apresentação tabular*, 3. ed., 1993 | Apresentação de dados numéricos em tabelas, com título, fonte/notas e linhas laterais abertas. |
 
@@ -26,6 +27,8 @@ Foram consultadas implementações acadêmicas abertas e seus comentários:
 - [Implementação acadêmica para UNIVALI, versão fixada](https://github.com/fockingf/template-latex-univali/blob/ce0a677426f796c91bbe2e03202e57faf2c64308/README.md), que declara as edições 2024/2025/2023 e os critérios de títulos/fontes. Trata-se de uma implementação secundária, não de publicação normativa oficial da universidade.
 - [Implementação acadêmica PPgEA/UFRN](https://github.com/paoloo/PPGEA-UFRN-Template), que também documenta as edições adotadas.
 - [Origem, versão e licença do CSL usado pelo renderizador](../templates/bibliografia/FONTE.md).
+- [Manual do abnTeX2 sobre o sumário](https://github.com/abntex/abntex2/blob/0cb2fe32e3ca5dbcbb08098497603777837f5098/doc/latex/abntex2/abntex2.tex#L1966-L1991), que declara seguir as recomendações da NBR 6027:2012.
+- [Implementação do sumário na mesma versão do abnTeX2](https://github.com/abntex/abntex2/blob/0cb2fe32e3ca5dbcbb08098497603777837f5098/tex/latex/abntex2/abntex2.cls#L438-L527), com indicativos sem recuo hierárquico, coluna comum para títulos, pontilhado nos capítulos e tratamento de caixa alta.
 
 Os textos integrais no catálogo ABNT e as páginas originais do IBGE não ficaram
 acessíveis neste ambiente (bloqueio de rede). Assim, esta documentação registra
@@ -35,7 +38,7 @@ O CSL é comunitário e tem licença própria, preservada no repositório.
 
 ## Decisões de apresentação
 
-- As chamadas usam autor-data: `Silva (2023)` ou `(Silva, 2023)`. Sobrenomes em
+- As chamadas usam autor-data: `JCGM (2012)` ou `(JCGM, 2012)`. Sobrenomes em
   caixa mista nas chamadas seguem o referencial de 2023; siglas institucionais
   preservam sua grafia. Citações diretas devem informar página ou outro localizador.
 - O citeproc gera as referências em ordem alfabética e faz a desambiguação de
@@ -64,7 +67,69 @@ O CSL é comunitário e tem licença própria, preservada no repositório.
   são recalculados pela ordem dos objetos a cada geração, nunca pelo nome do ID.
 - As legendas/fontes/notas usam 10 pontos e entrelinha de 12 pontos. As
   referências usam espaço simples. Corpo, capas, folha de rosto, autores,
-  logotipo e regras condicionais de cidade/data permanecem no modelo aprovado.
+  logotipo e regras condicionais de cidade/data preservam a composição aprovada.
+  No núcleo consolidado, campos sem conteúdo não geram rótulos, linhas de
+  assinatura ou páginas vazias; a aprovação exige dados efetivos.
+
+## Relatório institucional
+
+O perfil `relatorio` usa como referência visual
+`templates/Relatorio/Modelo Relatorio.doc`. A capa preserva a sequência e o
+alinhamento dos blocos: logo alto centralizado na página, identificação do
+trabalho, curso e título centralizados no miolo, autoria à direita e cidade/data
+no rodapé. A marca reutiliza o mesmo arquivo de imagem do artigo; não há uma
+reconstrução tipográfica do logotipo.
+
+O corpo reutiliza a tipografia acadêmica compartilhada: A4, margens superior e
+esquerda de 3 cm, inferior e direita de 2 cm, fonte de 12 pontos, entrelinha de
+1,5 e recuo de 1,25 cm. No relatório, cada seção primária inicia nova página.
+Esses critérios vêm da referência institucional. As edições antigas das normas
+impressas no documento Word não substituem o referencial e o alcance da consulta
+registrados nesta documentação.
+
+`tipo_trabalho` permite informar a modalidade real no bloco superior da capa;
+o padrão é `RELATÓRIO TÉCNICO`. `natureza` permite descrever o contexto na folha
+de rosto; na ausência do campo, é usada somente a apresentação ao curso
+informado. Pessoas, contatos, assinaturas e resultados não são preenchidos por
+suposição. Campos e páginas opcionais seguem as condições do núcleo. Consulte o
+[guia do relatório e as demonstrações](relatorio.md).
+
+## Sumário e critérios de alinhamento
+
+A revisão do sumário usa a NBR 6027:2012 como referencial, com apoio das fontes
+secundárias fixadas acima. Esta revisão não consultou o texto integral da
+norma; a página universitária consultada foi bloqueada pela rede do ambiente.
+Assim, os detalhes visuais
+seguintes registram a implementação adotada e a solicitação do usuário, sem
+atribuir toda decisão estética a uma obrigação textual da norma.
+
+- Os indicativos numéricos dos níveis exibidos começam na mesma margem
+  esquerda, sem recuo adicional para subseções ou subsubseções.
+- Os títulos começam em uma coluna comum, após o indicativo mais extenso.
+  As linhas de continuação e as entradas sem número, como referências,
+  apêndices e anexos, alinham-se pela coluna do título. A largura necessária
+  é medida na composição e persistida no auxiliar do XeLaTeX para a passagem
+  seguinte; não depende de espaços ou números escritos manualmente no Markdown.
+- Todos os níveis e as entradas sem número usam pontilhado até a coluna da
+  paginação, alinhada à direita. O pontilhado uniforme foi uma escolha visual
+  solicitada para o projeto e também aparece no modelo consultado do abnTeX2.
+- Os títulos principais aparecem em caixa alta no sumário, acompanhando a
+  apresentação do corpo. Subtítulos preservam a grafia do Markdown, inclusive
+  siglas e nomes próprios. Não há conversão indiscriminada para minúsculas nem
+  reescrita dos títulos ou identificadores do conteúdo.
+
+Essas regras ficam no estilo compartilhado
+`templates/latex/classes/senaisumario.sty`, consumido pelos perfis existentes.
+A numeração e os destinos continuam automáticos. A revisão verifica a página
+de chegada do link, além do número impresso: no relatório, a quebra visual
+precede o título de seção para que sua âncora fique na página correta.
+O citeproc é aplicado antes da apresentação, permitindo o mesmo tratamento
+para o título das referências gerado automaticamente.
+
+Os testes específicos estão em `tests/test_sumario.py`: alinhamento e
+pontilhado nos quatro perfis, títulos longos com indicativos extensos e links
+depois da reorganização de seções. A conferência deve incluir o Pandoc 3.1.3 e
+o TeX Live 2023 do CI, além da versão local.
 
 ## Bibliografia estruturada e chamadas
 
@@ -79,25 +144,26 @@ ou CSL-JSON com uma lista na raiz. BibTeX não é aceito por esta interface.
 
 ```yaml
 references:
-  - id: silva2023
-    type: book
+  - id: jcgm2012
+    type: report
     author:
-      - family: Silva
-        given: Ana
-    title: "Manual de inspeção mecânica"
+      - literal: JCGM
+    title: "International vocabulary of metrology: basic and general concepts and associated terms (VIM)"
+    edition: "3"
     issued:
-      date-parts: [[2023]]
-    publisher: "Editora de exemplo"
-    publisher-place: "Cuiabá"
+      date-parts: [[2012]]
+    publisher: BIPM
+    publisher-place: Sèvres
+    number: "JCGM 200:2012"
 ```
 
-O exemplo acima é uma referência fictícia para demonstrar a sintaxe. O artigo
-do repositório possui sua própria bibliografia em
+O exemplo acima usa uma publicação real com autoria corporativa, sem dados
+pessoais fictícios. O artigo do repositório mantém sua bibliografia em
 [`exemplos/referencias/artigo.yaml`](../exemplos/referencias/artigo.yaml).
 
 ```markdown
-Segundo @silva2023, o registro deve permitir a revisão das evidências.
-A mesma origem pode ser chamada entre parênteses [@silva2023, p. 17].
+A terminologia de medição é apresentada por @jcgm2012.
+A mesma obra pode ser chamada entre parênteses [@jcgm2012].
 
 # Referências {.unnumbered}
 
@@ -155,7 +221,7 @@ Objetos numerados não podem ser aninhados em outro objeto numerado; o painel
 descrito abaixo é um container sem número, com filhos visuais identificados.
 
 Título, fonte e nota aceitam texto Markdown simples e citações, por exemplo
-`fonte="Adaptado de [@silva2023]."`. Figuras e gráficos aceitam imagens em
+`fonte="Adaptado de [@jcgm2012]."`. Figuras e gráficos aceitam imagens em
 formatos compatíveis com XeLaTeX, como PNG e PDF; o gráfico do exemplo é vetorial.
 As tabelas podem continuar em outras páginas; revise a composição de tabelas
 longas no documento final, inclusive identificação de continuação conforme a
@@ -254,6 +320,19 @@ não é suficiente para essa decisão. As versões verificadas para esse caminho
 incluem 2.17.1.1, 3.1.3 e 3.1.11.1. O workflow registra as versões das ferramentas
 nos logs de instalação para facilitar a reprodução de falhas.
 
+A verificação também usa o TeX Live 2023 do Ubuntu 24.04, com os pacotes
+`pandoc` e `pandoc-data` da mesma distribuição e suas fontes recomendadas.
+O idioma informado em um elemento permanece na representação semântica;
+na apresentação, a marca `lang` redundante é omitida quando coincide com
+o idioma principal. Isso evita a reimportação do Babel e a redefinição de
+comandos de data nos templates padrão do Pandoc 3.1.3. Idiomas diferentes
+continuam sendo encaminhados ao writer. A protrusão óptica fica desativada
+somente no bloco de equação para manter a tinta do número dentro da margem
+também com as fontes de fallback.
+
+O workflow publica uma anotação por teste com falha, preservando o diagnóstico
+na página de verificações quando o acesso aos logs completos não está disponível.
+
 Os testes inserem e reorganizam objetos dos quatro tipos, verificam as chamadas
 e os destinos, exercitam citações narrativas/parentéticas e compilam um PDF sem
 interrogações de referências não resolvidas. Uma pergunta legítima em outro
@@ -262,3 +341,32 @@ documento não deve ser confundida com uma referência quebrada.
 A ilustração motor-bomba foi criada para este exemplo com apoio de inteligência
 artificial. O gráfico contém dados simulados, não resultados de pesquisa ou de
 uma manutenção real. Essas origens também aparecem no PDF, junto aos elementos.
+
+
+## Núcleo documental e catálogo compartilhado
+
+A consolidação separa Markdown/YAML, interpretação e geração comuns, perfis
+documentais e apresentação visual. Os perfis `artigo`, `relatorio`, `nota_aula` e
+`atividade_avaliativa` consomem a mesma representação semântica Pandoc JSON;
+numeração, IDs e validação não são reimplementados por template.
+
+A [matriz de cobertura](matriz-cobertura.md) delimita todos os elementos
+suportados e suas condições. O [kit](../kit/README.md) fornece entradas prontas
+e propriedades chave-valor (`identificador`, `titulo`, `arquivo`, `fonte`,
+`nota`, `idioma`); `#id` e imagens Markdown continuam compatíveis. Parágrafos,
+títulos e listas permanecem em Markdown comum.
+
+Capa e folha de rosto mantêm a apresentação institucional aprovada. Orientação,
+contato, coordenação e membros da banca aparecem apenas quando fornecidos;
+campos ausentes não são substituídos por rótulos ou assinaturas vazias. A
+página de aprovação só é criada quando há dados de coordenação, banca ou data
+de aprovação. `pre_textuais: false` continua permitindo iniciar pelo corpo.
+Resumo ausente ou vazio não gera título; palavras-chave ausentes ou em lista
+vazia não geram rótulo. Cidade e data não são inferidas.
+
+O artigo original e seu PDF aprovado permanecem como referência de regressão.
+As [demonstrações do núcleo](../exemplos/nucleo/) e
+[do relatório](../exemplos/relatorio/) são arquivos separados, com autoria
+coletiva e sem pessoas ou contatos inventados. Artigo e relatório compartilham
+o preâmbulo visual e os mecanismos de CSL, tabelas e imagens; cada perfil
+seleciona sua composição sem duplicar a interpretação dos elementos.

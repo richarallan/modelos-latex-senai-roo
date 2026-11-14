@@ -35,7 +35,7 @@ class RenderizadorTestes(unittest.TestCase):
         exemplo = renderizar.carregar_documento(
             renderizar.RAIZ / "exemplos" / "atividade-usinagem.md"
         )
-        for autor in ("Richar Allan Macedo", ["Zélia & Silva", "Ana_Costa", "Érico Souza"]):
+        for autor in ("Richar Allan Macedo", ["Equipe Z & W", "Equipe_A", "Equipe de revisão"]):
             with self.subTest(autor=autor):
                 documento = renderizar.Documento(
                     exemplo.caminho, {**exemplo.metadados, "autor": autor}, exemplo.corpo
@@ -46,7 +46,7 @@ class RenderizadorTestes(unittest.TestCase):
         exemplo = renderizar.carregar_documento(
             renderizar.RAIZ / "exemplos" / "atividade-usinagem.md"
         )
-        for autor in ([], ["Ana", ""], ["Ana", "AB"], ["Ana", 12], 12, ""):
+        for autor in ([], ["Equipe", ""], ["Equipe", "AB"], ["Equipe", 12], 12, ""):
             with self.subTest(autor=autor):
                 documento = renderizar.Documento(
                     exemplo.caminho, {**exemplo.metadados, "autor": autor}, exemplo.corpo
@@ -58,7 +58,7 @@ class RenderizadorTestes(unittest.TestCase):
         exemplo = renderizar.carregar_documento(
             renderizar.RAIZ / "exemplos" / "atividade-usinagem.md"
         )
-        autores = ["Zélia & Silva", "Ana_Costa", "Érico Souza"]
+        autores = ["Equipe Z & W", "Equipe_A", "Equipe de revisão"]
         for autor, nomes in (("Richar Allan Macedo", ["Richar Allan Macedo"]), (autores, autores)):
             for modelo in (None, "artigo"):
                 with self.subTest(autor=autor, modelo=modelo):

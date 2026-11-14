@@ -1,8 +1,10 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{senaiarticle}[2026/11/11 v0.2 Documentos e artigo institucional]
+\ProvidesClass{senaiarticle}[2026/11/13 v0.3 Documentos, artigo e relatório institucional]
 
 \newif\ifsenai@artigo
+\newif\ifsenai@relatorio
 \DeclareOption{artigo}{\senai@artigotrue}
+\DeclareOption{relatorio}{\senai@relatoriotrue\senai@artigotrue}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
 \ifsenai@artigo
@@ -12,7 +14,7 @@
 \fi
 
 % O modo padrão preserva os documentos pedagógicos do primeiro MVP.
-% A opção artigo aplica o perfil acadêmico da referência institucional.
+% Artigo e relatório compartilham o corpo acadêmico da referência institucional.
 \RequirePackage{fontspec}
 \defaultfontfeatures{Ligatures=TeX}
 \IfFontExistsTF{TeX Gyre Heros}{
@@ -123,5 +125,10 @@
   \widowpenalty=10000
   \clubpenalty=10000
 \fi
+
+% Compatibilidade dos TEX anteriores; a paginação agora precede as âncoras
+% no apresentador comum, conforme a capacidade declarada pelo perfil.
+\newcommand{\senaiiniciarconteudo}{}
+\RequirePackage{senaisumario}
 
 \AtBeginDocument{\raggedbottom}
